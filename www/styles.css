@@ -1,0 +1,47 @@
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  header, footer {
+    background-color: #333;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+  }
+  
+  .tabs {
+    display: flex;
+    justify-content: center;
+    background-color: #f4f4f4;
+    padding: 0.5rem;
+  }
+  
+  .tab {
+    margin: 0 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    background-color: #ddd;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .tab.active {
+    background-color: #333;
+    color: white;
+  }
+  
+  .content {
+    padding: 2rem;
+    text-align: center;
+  }
+  
+  #chart-container {
+    height: 400px;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    background-color: #fafafa;
+  }
+  
