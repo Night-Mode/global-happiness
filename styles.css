@@ -1,47 +1,83 @@
 /* styles.css */
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-  }
-  
-  header, footer {
-    background-color: #333;
-    color: white;
-    padding: 1rem;
-    text-align: center;
-  }
-  
-  .tabs {
-    display: flex;
-    justify-content: center;
-    background-color: #f4f4f4;
-    padding: 0.5rem;
-  }
-  
-  .tab {
-    margin: 0 0.5rem;
-    padding: 0.5rem 1rem;
-    border: none;
-    background-color: #ddd;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-  
-  .tab.active {
-    background-color: #333;
-    color: white;
-  }
-  
-  .content {
-    padding: 2rem;
-    text-align: center;
-  }
-  
-  #chart-container {
-    height: 400px;
-    margin-bottom: 1rem;
-    border: 1px solid #ccc;
-    background-color: #fafafa;
-  }
-  
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: #333;
+  color: white;
+  padding: 2rem; /* Increased from 1rem for more top space */
+  text-align: center;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  background-color: #f4f4f4;
+  padding: 1rem; /* Increased from 0.5rem for more space */
+  margin-bottom: 2rem; /* Add space below tabs */
+}
+
+.tab {
+  margin: 0 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: #ddd;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.tab.active {
+  background-color: #333;
+  color: white;
+}
+
+main {
+  max-width: 1200px; /* Increased from 900px for wider charts */
+  margin: 0 auto; /* Center the content */
+  /* No max-height to allow full expansion */
+}
+
+.content {
+  padding: 2rem; /* Keep padding for internal spacing */
+  text-align: center;
+  width: 100%; /* Fill the main section */
+  min-height: 1800px; /* Increased to ensure space for header, tabs, chart, and description */
+  display: flex; /* Use flexbox to stack children vertically */
+  flex-direction: column; /* Stack header, tabs, chart, description vertically */
+  justify-content: flex-start; /* Start from top */
+}
+
+#chart-container {
+  width: 100%; /* Full width of .content */
+  height: 1200px; /* Reduced from 1600px but still tall enough for 700px charts + extras */
+  margin-bottom: 2rem; /* Increased from 1rem to push description down */
+  border: 1px solid #ccc;
+  background-color: #fafafa;
+  overflow: visible; /* Allow overflow if needed */
+}
+
+#description {
+  width: 100%; /* Ensure it takes full width */
+  text-align: center;
+  padding: 1rem; /* Add some padding for breathing room */
+}
+
+footer {
+  background-color: #333;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+  margin-top: 2rem; /* Space above footer */
+}
+
+.tooltip {
+  position: absolute;
+  background: #fff;
+  padding: 5px;
+  border-radius: 4px;
+  pointer-events: none;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
