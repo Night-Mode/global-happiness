@@ -1,31 +1,32 @@
+import { renderChart3 } from "./js/chart3.js";
 
+const descriptions = [
+  "Chart 1 description",
+  "Chart 2 description",
+  "Interactive scatterplot with dropdowns for x and y axes and color-coded happiness levels.",
+  "Chart 4 description",
+  "Chart 5 description",
+  "Chart 6 description"
+];
 
-// script.js
-const chartDescriptions = [
-    "This is Chart 1's description.",
-    "This is Chart 2's description.",
-    "This is Chart 3's description.",
-    "This is Chart 4's description.",
-    "This is Chart 5's description.",
-    "This is Chart 6's description."
-  ];
-  
-  const chartContainer = document.getElementById("chart-container");
-  const descriptionContainer = document.getElementById("description");
-  const tabButtons = document.querySelectorAll(".tab");
-  
-  function renderChart(index) {
-    // TEMP: Replace this later with Observable embeds or iframe
-    chartContainer.innerHTML = `<p>[Chart ${index + 1} would be embedded here]</p>`;
-    descriptionContainer.innerText = chartDescriptions[index];
-    tabButtons.forEach(btn => btn.classList.remove("active"));
-    tabButtons[index].classList.add("active");
+const tabButtons = document.querySelectorAll(".tab");
+const descriptionContainer = document.getElementById("description");
+
+function renderChart(index) {
+  descriptionContainer.innerText = descriptions[index];
+  tabButtons.forEach(btn => btn.classList.remove("active"));
+  tabButtons[index].classList.add("active");
+
+  // Load specific charts
+  if (index === 2) {
+    renderChart3();
+  } else {
+    document.getElementById("chart-container").innerHTML = `<p>[Chart ${index + 1} will go here]</p>`;
   }
-  
-  tabButtons.forEach((btn, idx) => {
-    btn.addEventListener("click", () => renderChart(idx));
-  });
-  
-  // Load first chart on start
-  renderChart(0);
-  
+}
+
+tabButtons.forEach((btn, idx) => {
+  btn.addEventListener("click", () => renderChart(idx));
+});
+
+renderChart(0);
