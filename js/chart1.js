@@ -1,36 +1,47 @@
-// chart.js
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 export async function renderChart1() {
-  // Clear chart container
-  const container = document.getElementById("chart-container");
-  container.innerHTML = `
-  <svg id="map" width="800" height="600"></svg>
-  <div id="legend-container">
-    <svg id="legend-svg"></svg>
-  </div>
-  <div class="tooltip"></div>
-`;
+  // Select containers
+  const visualContainer = document.getElementById("chart-visual");
+  const legendContainer = document.getElementById("chart-legend");
+  const tooltip = d3.select(".tooltip");
 
-  const svg = d3.select("#map");
-  const legendSvg = d3.select("#legend-svg");
-  const margin = { top: 50, right: 60, bottom: 30, left: 50 };
-  const width = +svg.attr("width") - margin.left - margin.right;
-  const height = +svg.attr("height") - margin.top - margin.bottom;
+  // Clear previous content
+  visualContainer.innerHTML = "";
+  legendContainer.innerHTML = "";
 
-  // Create chart group with margins
+  // Append SVG to chart visual
+  const rect = visualContainer.getBoundingClientRect();
+
+  const svg = d3.select(visualContainer)
+    .append("svg")
+    .attr("id", "map")
+    .attr("width", rect.width)
+    .attr("height", rect.height);
+
+  const legendSvg = d3.select(legendContainer)
+    .append("svg")
+    .attr("id", "legend-svg")
+    .attr("width", 250)
+    .attr("height", 100);
+
+  const margin = { top: 40, right: 80, bottom: 60, left: 80 };
+  const width = rect.width - margin.left - margin.right;
+  const height = rect.height - margin.top - margin.bottom;
+
+  // Chart group
   const chartGroup = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
   // Add title
   svg.append("text")
-    .attr("x", +svg.attr("width") / 2)
+    .attr("x", 700 / 2)
     .attr("y", margin.top / 2)
     .attr("text-anchor", "middle")
     .style("font", "bold 20px Arial, sans-serif")
     .text("Global Happiness Scores");
 
-  // Load GeoJSON data (assumes file is in the same directory)
+  // Load GeoJSON
   const geoData = await d3.json("data/merged_data_195.geojson");
   const projection = d3.geoMercator().fitSize([width, height], geoData);
   const path = d3.geoPath().projection(projection);
@@ -43,12 +54,13 @@ export async function renderChart1() {
   const colorScale = d3.scaleSequential(d3.interpolateYlOrRd)
     .domain([minScore, maxScore]);
 
-  // Tooltip
-  const tooltip = d3.select(".tooltip")
+  // Tooltip styling (in case it's not styled yet)
+  tooltip
     .style("position", "absolute")
     .style("background", "#fff")
     .style("padding", "5px")
     .style("border-radius", "4px")
+    .style("box-shadow", "0 2px 5px rgba(0,0,0,0.2)")
     .style("display", "none");
 
   // Draw map
@@ -75,7 +87,7 @@ export async function renderChart1() {
       tooltip.style("display", "none");
     });
 
-  // Zoom functionality
+  // Zoom
   const zoom = d3.zoom()
     .scaleExtent([1, 8])
     .translateExtent([[0, 0], [width, height]])
@@ -84,12 +96,10 @@ export async function renderChart1() {
 
   // Legend
   const legendWidth = 200;
-  legendSvg.selectAll("*").remove();
-  legendSvg.attr("transform", `translate(10, 10)`);
-
   const gradient = legendSvg.append("defs")
     .append("linearGradient")
     .attr("id", "gradient");
+
   gradient.selectAll("stop")
     .data(d3.range(10))
     .join("stop")

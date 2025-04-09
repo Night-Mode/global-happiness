@@ -14,18 +14,26 @@
 
   <main>
     <div class="tabs">
-      <button class="tab" data-chart="0">Chart 1</button>
-      <button class="tab" data-chart="1">Chart 2</button>
-      <button class="tab" data-chart="2">Chart 3</button>
-      <button class="tab" data-chart="3">Chart 4</button>
-      <button class="tab" data-chart="4">Chart 5</button>
-      <button class="tab" data-chart="5">Chart 6</button>
+      <button class="tab" data-chart="0">Home</button>
+      <button class="tab" data-chart="1">Chart 1</button>
+      <button class="tab" data-chart="2">Chart 2</button>
+      <button class="tab" data-chart="3">Chart 3</button>
+      <button class="tab" data-chart="4">Chart 4</button>
+      <button class="tab" data-chart="5">Chart 5</button>
+      <button class="tab" data-chart="6">Chart 6</button>
     </div>
 
     <div class="content">
-      <div id="chart-container"></div>
+      <div id="chart-container">
+        <div id="chart-ui">
+          <div id="chart-legend">chart-legend<br><br><br><br><br><br><br><br></div>  
+          <div id="chart-controls">chart-controls</div> 
+        </div>
+        <div id="chart-visual"></div>
+      </div>
       <div id="description">[Description will go here]</div>
     </div>
+    
   </main>
 
   <footer>
@@ -37,5 +45,6 @@
   <script type="module" src="./js/chart2.js"></script>
   <script type="module" src="./js/chart3.js"></script>
   <script type="module" src="./js/chart4.js"></script>
+  <div class="tooltip" style="display: none;"></div>
 </body>
 </html>

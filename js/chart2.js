@@ -1,18 +1,35 @@
-// chart1.js
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 export async function renderChart2() {
-  // Clear chart container
-  const container = document.getElementById("chart-container");
-  container.innerHTML = `
-    <svg id="barchart" width="900" height="700"></svg>
-    <div class="tooltip"></div>
-  `;
+  // Select containers
+  const visualContainer = document.getElementById("chart-visual");
+  const legendContainer = document.getElementById("chart-legend");
+  const tooltip = d3.select(".tooltip");
 
-  const svg = d3.select("#barchart");
-  const margin = { top: 40, right: 70, bottom: 50, left: 150 };
-  const width = +svg.attr("width");
-  const height = 300; // Height for each chart
+  // Clear previous content
+  visualContainer.innerHTML = "";
+  legendContainer.innerHTML = "";
+
+  // Append SVG to chart-visual
+  // Append SVG to chart visual
+  const rect = visualContainer.getBoundingClientRect();
+
+  const svg = d3.select(visualContainer)
+    .append("svg")
+    .attr("id", "map")
+    .attr("width", rect.width)
+    .attr("height", rect.height);
+
+  const legendSvg = d3.select(legendContainer)
+    .append("svg")
+    .attr("id", "legend-svg")
+    .attr("width", 250)
+    .attr("height", 100);
+
+  const margin = { top: 40, right: 80, bottom: 60, left: 80 };
+  const width = rect.width - margin.left - margin.right;
+  const height = rect.height - margin.top - margin.bottom;
+
   const keys = [
     "Explained by: Log GDP per capita",
     "Explained by: Social support",
@@ -22,15 +39,11 @@ export async function renderChart2() {
     "Explained by: Perceptions of corruption"
   ];
 
-  // Load GeoJSON data
   const geoData = await d3.json("data/merged_data_195.geojson");
-  let data = geoData.features
-    .map(d => d.properties)
-    .sort((a, b) => b["Ladder score"] - a["Ladder score"]);
+  let data = geoData.features.map(d => d.properties).sort((a, b) => b["Ladder score"] - a["Ladder score"]);
   const top10 = data.slice(0, 10);
   const bottom10 = data.filter(d => d["Ladder score"] > 0).slice(-10);
 
-  // Calculate total for each country
   [top10, bottom10].forEach(set =>
     set.forEach(d => {
       d.total = keys.reduce((sum, key) => sum + (+d[key] || 0), 0);
@@ -38,16 +51,15 @@ export async function renderChart2() {
     })
   );
 
-  // Tooltip
-  const tooltip = d3.select(".tooltip")
+  tooltip
     .style("position", "absolute")
     .style("background", "#fff")
     .style("padding", "5px")
     .style("border-radius", "4px")
+    .style("box-shadow", "0 2px 5px rgba(0,0,0,0.2)")
     .style("display", "none")
     .style("font", "12px Arial");
 
-  // Title
   svg.append("text")
     .attr("x", width / 2)
     .attr("y", 20)
@@ -55,25 +67,17 @@ export async function renderChart2() {
     .style("font", "bold 20px Arial")
     .text("Happiness Factors");
 
-  // Chart creation function
   function createChart(dataset, yOffset, title, sortKey = "total") {
     const sorted = [...dataset].sort((a, b) =>
       sortKey === "total" ? b.total - a.total : b[sortKey] - a[sortKey]
     );
-    const stack = d3.stack().keys(keys)(sorted);
-    const x = d3.scaleLinear()
-      .domain([0, d3.max(sorted, d => d.total) * 1.1])
-      .range([margin.left, width - margin.right]);
-    const y = d3.scaleBand()
-      .domain(sorted.map(d => d["ADMIN"]))
-      .range([margin.top, height - margin.bottom])
-      .padding(0.1);
-    const color = d3.scaleOrdinal()
-      .domain(keys)
-      .range(d3.schemeTableau10);
 
-    const g = svg.append("g")
-      .attr("transform", `translate(0,${yOffset})`);
+    const stack = d3.stack().keys(keys)(sorted);
+    const x = d3.scaleLinear().domain([0, d3.max(sorted, d => d.total) * 1.1]).range([margin.left, width - margin.right]);
+    const y = d3.scaleBand().domain(sorted.map(d => d["ADMIN"])).range([margin.top, height - margin.bottom]).padding(0.1);
+    const color = d3.scaleOrdinal().domain(keys).range(d3.schemeTableau10);
+
+    const g = svg.append("g").attr("transform", `translate(0,${yOffset})`);
 
     g.append("text")
       .attr("x", width / 2)
@@ -96,11 +100,9 @@ export async function renderChart2() {
           d3.select(this).attr("opacity", 0.8);
           tooltip
             .style("display", "block")
-            .html(
-              `${d.data["ADMIN"]}<br>${s.key.replace(/^Explained by:\s*/, "")}: ${
-                (d[1] - d[0]) / d.data.ladderScore * 100 | 0
-              }%`
-            )
+            .html(`${d.data["ADMIN"]}<br>${s.key.replace(/^Explained by:\s*/, "")}: ${
+              ((d[1] - d[0]) / d.data.ladderScore * 100).toFixed(0)
+            }%`)
             .style("left", `${event.pageX + 10}px`)
             .style("top", `${event.pageY - 10}px`);
         })
@@ -118,15 +120,19 @@ export async function renderChart2() {
     g.append("g")
       .attr("transform", `translate(0,${height - margin.bottom})`)
       .call(d3.axisBottom(x).ticks(5));
+
     g.append("g")
       .attr("transform", `translate(${margin.left},0)`)
       .call(d3.axisLeft(y));
   }
 
-  // Legend with wrapping
   function createLegend(sortKey) {
-    const legend = svg.append("g")
-      .attr("transform", `translate(${margin.left},${height * 2 + 40})`);
+    const legendSvg = d3.select(legendContainer)
+      .append("svg")
+      .attr("width", 900)
+      .attr("height", 100);
+
+    const legend = legendSvg.append("g").attr("transform", `translate(${margin.left},10)`);
     const color = d3.scaleOrdinal().domain(keys).range(d3.schemeTableau10);
 
     legend.append("text")
@@ -157,7 +163,6 @@ export async function renderChart2() {
       });
   }
 
-  // Wrap function for legend text
   function wrap(text, width) {
     text.each(function () {
       const text = d3.select(this);
@@ -174,8 +179,7 @@ export async function renderChart2() {
           line.pop();
           tspan.text(line.join(" "));
           line = [words[words.length - 1]];
-          tspan = text
-            .append("tspan")
+          tspan = text.append("tspan")
             .attr("x", 20)
             .attr("y", y)
             .attr("dy", `${++lineNumber * lineHeight}em`)
@@ -185,21 +189,23 @@ export async function renderChart2() {
     });
   }
 
-  // Update function
   function update(newSortKey) {
     svg.selectAll("g").remove();
+    svg.select("text").remove();
+
     svg.append("text")
       .attr("x", width / 2)
       .attr("y", 20)
       .attr("text-anchor", "middle")
       .style("font", "bold 20px Arial")
       .text("Happiness Factors");
+
     createChart(top10, 30, "Top 10 Happiest Countries", newSortKey);
     createChart(bottom10, height + 10, "Bottom 10 Happiest Countries", newSortKey);
+    legendContainer.innerHTML = "";
     createLegend(newSortKey);
   }
 
-  // Initial render
   let sortKey = "total";
   createChart(top10, 30, "Top 10 Happiest Countries", sortKey);
   createChart(bottom10, height + 10, "Bottom 10 Happiest Countries", sortKey);

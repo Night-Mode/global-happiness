@@ -2,32 +2,43 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 export async function renderChart3() {
-  // Clear chart container
-  const container = document.getElementById("chart-container");
-  container.innerHTML = `
+  // Clear chart sections
+  const visualContainer = document.getElementById("chart-visual");
+  const controlsContainer = document.getElementById("chart-controls");
+  const legendContainer = document.getElementById("chart-legend");
+
+  visualContainer.innerHTML = "";
+  controlsContainer.innerHTML = "";
+  legendContainer.innerHTML = "";
+
+  // Create dropdowns
+  controlsContainer.innerHTML = `
     <label for="x-axis">X-Axis:</label>
     <select id="x-axis"></select>
 
     <label for="y-axis">Y-Axis:</label>
     <select id="y-axis"></select>
-
-    <div style="display: flex;">
-      <svg id="scatterplot" width="800" height="500"></svg>
-      <div id="legend-container">
-        <svg id="legend-svg" width="150" height="250"></svg>
-      </div>
-    </div>
-    <div class="tooltip"></div>
   `;
 
-  const svg = d3.select("#scatterplot");
-  const legendSvg = d3.select("#legend-svg");
-  const margin = { top: 40, right: 80, bottom: 60, left: 80 };
-  const width = +svg.attr("width") - margin.left - margin.right;
-  const height = +svg.attr("height") - margin.top - margin.bottom;
+  const rect = visualContainer.getBoundingClientRect();
 
-  const chartGroup = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
-  const xAxisGroup = chartGroup.append("g").attr("transform", `translate(0,${height})`);
+  const svg = d3.select(visualContainer)
+    .append("svg")
+    .attr("id", "scatterplot")
+    .attr("width", rect.width)
+    .attr("height", rect.height);
+
+  const margin = { top: 40, right: 80, bottom: 60, left: 80 };
+  const width = rect.width - margin.left - margin.right;
+  const height = rect.height - margin.top - margin.bottom;
+    
+
+  const chartGroup = svg.append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  const xAxisGroup = chartGroup.append("g")
+    .attr("transform", `translate(0,${height})`);
+
   const yAxisGroup = chartGroup.append("g");
 
   const xAxisLabel = chartGroup.append("text")
@@ -48,8 +59,8 @@ export async function renderChart3() {
   const tooltip = d3.select(".tooltip");
 
   const data = await d3.csv("data/scatterplot.csv", d3.autoType);
-
   const numericalColumns = Object.keys(data[0]).filter(d => d !== "Country" && d !== "Ladder Score");
+
   const xSelect = d3.select("#x-axis");
   const ySelect = d3.select("#y-axis");
 
@@ -60,13 +71,22 @@ export async function renderChart3() {
 
   let xScale = d3.scaleLinear().range([0, width]);
   let yScale = d3.scaleLinear().range([height, 0]);
+
   const happinessBins = [0, 2, 4, 6, 8];
   const colorScale = d3.scaleThreshold()
     .domain(happinessBins.slice(1))
     .range(["#e41a1c", "#ffcc00", "#4daf4a", "#377eb8"]);
+
   const legendCategories = ["0-2", "2-4", "4-6", "6-8"];
 
+  // Build legend
+  const legendSvg = d3.select(legendContainer)
+    .append("svg")
+    .attr("width", 200)
+    .attr("height", 160);
+
   legendSvg.selectAll("*").remove();
+
   legendSvg.append("text")
     .attr("x", 10)
     .attr("y", 15)
@@ -138,6 +158,7 @@ export async function renderChart3() {
     circles.exit().remove();
   }
 
+  // Set default selection and update
   xSelect.property("value", "Log GDP per capita");
   ySelect.property("value", "Healthy Life Expectancy");
   updateChart();

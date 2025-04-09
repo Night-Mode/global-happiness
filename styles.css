@@ -46,44 +46,79 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem;
+  padding: 0 2rem 2rem 2rem;
   margin: 0 auto;
   max-width: 1800px;     /* Caps it */
   width: 100%;           /* Allows it to scale down */
   box-sizing: border-box;
-  overflow-x: hidden;    /*  Prevents child overflow from stretching */
+  overflow-x: hidden;
+  align-items: flex-start;    /*  Prevents child overflow from stretching */
 }
 
 
-main, .content, #chart-container,  #chart-section, #description {
+/* main, .content, #chart-container,  #chart-section, #chart-ui, #description {
   border: 1px dashed red;
-}
-
+} */
 
 #chart-container {
-  width: 1400px;
-  height: 600px;
-  margin: 2rem auto;
-  border: 1px solid #ccc;
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+
+  width: 1500px;          /* Fixed width to stabilize layout */
+  height: 600px;          /* Fixed height for consistent vertical space */
+
+  margin: 2rem auto;      /* Centers the container horizontally */
   padding: 1rem;
-  background-color: #ffff;  
-  overflow: hidden; /* prevents overflow artifacts */
+
+  background-color: #fff;
+  border: 1px solid #ccc;
   box-sizing: border-box;
   position: relative;
+
+  align-self: flex-start; /* Ensures left alignment inside .content if needed */
 }
 
+#chart-ui {
+  width: 250px;
+  height: 100%;            /* Fill height of #chart-container */
+  flex-shrink: 0;
 
-
-.chart-section {
-  /* display: flex; */
+  display: flex;
   flex-direction: column;
-  width: 100%; /* chart width (800px) + legend width (~150px) + padding */
+  justify-content: space-between;
+  gap: 1rem;
+
+  /* background-color: orange; */
+  box-sizing: border-box;
+}
+
+#chart-legend {
+  flex: 0 0 auto;
+  background-color: rgb(238, 0, 255);
+}
+
+#chart-controls {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  background-color: rgb(0, 255, 47);
+}
+
+#chart-visual {
+  width: 100%;
+  height: 100%;
+  background-color: lightblue; 
+  box-sizing: border-box;
+  overflow: hidden;            /* Prevents overflowing content like wide SVGs */
 }
 
 #description {
-  width: 100%; /* Ensure it takes full width */
+  width: 1500px;
   text-align: center;
-  padding: 1rem; /* Add some padding for breathing room */
+  padding: 1rem; 
 }
 
 #legend-container {

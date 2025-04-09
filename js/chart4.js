@@ -1,25 +1,44 @@
-// chart2.js
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 export async function renderChart4() {
-  // Clear chart container
-  const container = document.getElementById("chart-container");
-  container.innerHTML = `
-    <div id="title" style="font: bold 20px Arial, sans-serif; text-align: center; margin-bottom: 10px;">
+  // Select containers
+  const visualContainer = document.getElementById("chart-visual");
+  const controlsContainer = document.getElementById("chart-controls");
+  const legendContainer = document.getElementById("chart-legend");
+
+  // Clear previous content
+  visualContainer.innerHTML = "";
+  controlsContainer.innerHTML = "";
+  legendContainer.innerHTML = "";
+
+  // Chart title + dropdown into controls section
+  controlsContainer.innerHTML = `
+    <div style="font: bold 20px Arial, sans-serif; text-align: center; margin-bottom: 10px;">
       SDG Indicators Across Top 6 Data-Rich Countries
     </div>
     <div style="text-align: center; margin-bottom: 10px;">
       <label for="indicator-select">Indicator:</label>
       <select id="indicator-select"></select>
     </div>
-    <svg id="areachart" width="800" height="500"></svg>
   `;
 
-  // Load data
-  const data = await d3.json("data/top_6_data_countries.json");
-  data.forEach(d => (d.Year = +d.Year));
+  // Append SVG to chart visual
+  const rect = visualContainer.getBoundingClientRect();
 
-  // Define indicators for the dropdown
+  const svg = d3.select(visualContainer)
+    .append("svg")
+    .attr("id", "map")
+    .attr("width", rect.width)
+    .attr("height", rect.height);
+
+  const legendSvg = d3.select(legendContainer)
+    .append("svg")
+    .attr("id", "legend-svg")
+    .attr("width", 250)
+    .attr("height", 100);
+  const data = await d3.json("data/top_6_data_countries.json");
+  data.forEach(d => d.Year = +d.Year);
+
   const indicators = [
     { key: "UnderFiveMortality", label: "Under-Five Mortality (per 1,000)" },
     { key: "SecondaryEducation", label: "Secondary Education (%)" },
@@ -36,39 +55,31 @@ export async function renderChart4() {
     .attr("value", d => d.key)
     .text(d => d.label);
 
-  // Set up dimensions
-  const width = +d3.select("#areachart").attr("width");
-  const height = +d3.select("#areachart").attr("height");
-  const margin = { top: 40, right: 120, bottom: 40, left: 120 };
+  const margin = { top: 40, right: 80, bottom: 60, left: 80 };
+  const width = rect.width - margin.left - margin.right;
+  const height = rect.height - margin.top - margin.bottom;
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
-  // Create SVG and chart group
-  const svg = d3.select("#areachart");
-  const chart = svg
-    .append("g")
+  const chart = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
-  // Get unique countries and set color scale
   const countries = [...new Set(data.map(d => d.Country))];
   const colorScale = d3.scaleOrdinal()
     .domain(countries)
     .range(d3.schemeCategory10.slice(0, countries.length));
 
-  // Function to update the chart
   function updateChart() {
     const selectedIndicator = indicatorSelect.property("value");
 
-    // Group data by country and sort by max value (descending)
     const groupedData = d3.groups(data, d => d.Country)
       .map(([country, values]) => ({
         country,
         values: values.sort((a, b) => a.Year - b.Year),
         maxValue: d3.max(values, v => v[selectedIndicator] || 0)
       }))
-      .sort((a, b) => b.maxValue - a.maxValue); // Higher max values first
+      .sort((a, b) => b.maxValue - a.maxValue);
 
-    // Update scales
     const xScale = d3.scaleLinear()
       .domain(d3.extent(data, d => d.Year))
       .range([0, innerWidth]);
@@ -77,19 +88,16 @@ export async function renderChart4() {
       .domain([0, d3.max(data, d => d[selectedIndicator]) * 1.1 || 1])
       .range([innerHeight, 0]);
 
-    // Define the area generator
     const area = d3.area()
       .x(d => xScale(d.Year))
       .y0(innerHeight)
       .y1(d => yScale(d[selectedIndicator] || 0));
 
-    // Clear previous chart content
     chart.selectAll(".area").remove();
     chart.selectAll(".axis").remove();
     svg.selectAll(".title").remove();
-    svg.selectAll(".legend").remove();
+    legendContainer.innerHTML = "";
 
-    // Draw areas for each country
     chart.selectAll(".area")
       .data(groupedData)
       .enter()
@@ -101,7 +109,6 @@ export async function renderChart4() {
       .attr("stroke", d => d3.color(colorScale(d.country)).darker(1))
       .attr("stroke-width", 1);
 
-    // Add axes
     chart.append("g")
       .attr("class", "axis")
       .attr("transform", `translate(0,${innerHeight})`)
@@ -124,7 +131,7 @@ export async function renderChart4() {
       .attr("text-anchor", "middle")
       .text(indicators.find(i => i.key === selectedIndicator).label);
 
-    // Update title
+    // Title on top of SVG (optional if already in controls)
     svg.append("text")
       .attr("class", "title")
       .attr("x", width / 2)
@@ -132,10 +139,14 @@ export async function renderChart4() {
       .attr("text-anchor", "middle")
       .text(`${indicators.find(i => i.key === selectedIndicator).label} (2015–2023)`);
 
-    // Add legend
-    const legend = svg.append("g")
-      .attr("class", "legend")
-      .attr("transform", `translate(${innerWidth + margin.left + 20}, 20)`);
+    // Render legend inside #chart-legend
+    const legendSvg = d3.select(legendContainer)
+      .append("svg")
+      .attr("width", 250)
+      .attr("height", countries.length * 25);
+
+    const legend = legendSvg.append("g")
+      .attr("transform", `translate(10, 10)`);
 
     legend.selectAll("rect")
       .data(countries)
@@ -157,8 +168,8 @@ export async function renderChart4() {
       .style("font-size", "12px");
   }
 
-  // Initial render and update on change
-  indicatorSelect.property("value", "UnderFiveMortality"); // Set default value
+  // Default selection and render
+  indicatorSelect.property("value", "UnderFiveMortality");
   updateChart();
   indicatorSelect.on("change", updateChart);
 }
