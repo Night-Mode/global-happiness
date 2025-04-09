@@ -1,8 +1,10 @@
 /* styles.css */
 body {
   font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
   margin: 0;
   padding: 0;
+  width: 100%;
 }
 
 header {
@@ -16,8 +18,7 @@ header {
   display: flex;
   justify-content: center;
   background-color: #f4f4f4;
-  padding: 1rem; /* Increased from 0.5rem for more space */
-  margin-bottom: 2rem; /* Add space below tabs */
+  padding: 1rem; /* Increased from 0.5rem for more space */ 
 }
 
 .tab {
@@ -35,34 +36,74 @@ header {
 }
 
 main {
-  max-width: 1200px; /* Increased from 900px for wider charts */
-  margin: 0 auto; /* Center the content */
-  /* No max-height to allow full expansion */
+  width: 100%;
+  max-width: 1600px; 
+  margin: 0 auto;
 }
+
 
 .content {
-  padding: 2rem; /* Keep padding for internal spacing */
-  text-align: center;
-  width: 100%; /* Fill the main section */
-  min-height: 1800px; /* Increased to ensure space for header, tabs, chart, and description */
-  display: flex; /* Use flexbox to stack children vertically */
-  flex-direction: column; /* Stack header, tabs, chart, description vertically */
-  justify-content: flex-start; /* Start from top */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  margin: 0 auto;
+  max-width: 1800px;     /* Caps it */
+  width: 100%;           /* Allows it to scale down */
+  box-sizing: border-box;
+  overflow-x: hidden;    /*  Prevents child overflow from stretching */
 }
 
+
+main, .content, #chart-container,  #chart-section, #description {
+  border: 1px dashed red;
+}
+
+
 #chart-container {
-  width: 100%; /* Full width of .content */
-  height: 1200px; /* Reduced from 1600px but still tall enough for 700px charts + extras */
-  margin-bottom: 2rem; /* Increased from 1rem to push description down */
+  width: 1400px;
+  height: 600px;
+  margin: 2rem auto;
   border: 1px solid #ccc;
-  background-color: #fafafa;
-  overflow: visible; /* Allow overflow if needed */
+  padding: 1rem;
+  background-color: #ffff;  
+  overflow: hidden; /* prevents overflow artifacts */
+  box-sizing: border-box;
+  position: relative;
+}
+
+
+
+.chart-section {
+  /* display: flex; */
+  flex-direction: column;
+  width: 100%; /* chart width (800px) + legend width (~150px) + padding */
 }
 
 #description {
   width: 100%; /* Ensure it takes full width */
   text-align: center;
   padding: 1rem; /* Add some padding for breathing room */
+}
+
+#legend-container {
+  position: absolute;
+  top: 20px;       /* Adjust as needed */
+  right: 20px;     /* Adjust as needed */
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  pointer-events: none; /* Allows interactions to pass through */
+}
+
+#legend-svg {
+  width: 150px;
+  height: auto;
+}
+
+#description-section h2 {
+  margin-top: 0;
 }
 
 footer {

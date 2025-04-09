@@ -5,14 +5,12 @@ export async function renderChart1() {
   // Clear chart container
   const container = document.getElementById("chart-container");
   container.innerHTML = `
-    <div style="display: flex;">
-      <svg id="map" width="960" height="600"></svg>
-      <div id="legend-container">
-        <svg id="legend-svg" width="250" height="100"></svg>
-      </div>
-    </div>
-    <div class="tooltip"></div>
-  `;
+  <svg id="map" width="800" height="600"></svg>
+  <div id="legend-container">
+    <svg id="legend-svg"></svg>
+  </div>
+  <div class="tooltip"></div>
+`;
 
   const svg = d3.select("#map");
   const legendSvg = d3.select("#legend-svg");
