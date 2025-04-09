@@ -10,7 +10,7 @@ body {
 header {
   background-color: #333;
   color: white;
-  padding: 2rem; /* Increased from 1rem for more top space */
+  padding: 1rem; /* Increased from 1rem for more top space */
   text-align: center;
 }
 
@@ -60,6 +60,16 @@ main {
   border: 1px dashed red;
 } */
 
+#home-container {
+  width: 1500px;
+  height: 600px;               /* 👈 Match the chart height */
+  margin: 0 auto 2rem auto; 
+  padding: 1rem;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
 #chart-container {
   display: flex;
   flex-direction: row;
@@ -68,7 +78,7 @@ main {
   width: 1500px;          /* Fixed width to stabilize layout */
   height: 600px;          /* Fixed height for consistent vertical space */
 
-  margin: 2rem auto;      /* Centers the container horizontally */
+  margin: 0 auto 2rem auto;       /* Centers the container horizontally */
   padding: 1rem;
 
   background-color: #fff;
