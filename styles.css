@@ -41,7 +41,6 @@ main {
   margin: 0 auto;
 }
 
-
 .content {
   display: flex;
   flex-direction: column;
@@ -54,11 +53,6 @@ main {
   overflow-x: hidden;
   align-items: flex-start;    /*  Prevents child overflow from stretching */
 }
-
-
-/* main, .content, #chart-container,  #chart-section, #chart-ui, #description {
-  border: 1px dashed red;
-} */
 
 #home-container {
   width: 1500px;
@@ -134,8 +128,6 @@ main {
   text-align: center;
   height: 30px;
 }
-
-
 
 #chart-visual {
   width: 100%;

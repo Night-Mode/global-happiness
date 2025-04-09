@@ -18,38 +18,6 @@ const descriptions = [
 const tabButtons = document.querySelectorAll(".tab");
 const descriptionContainer = document.getElementById("description");
 
-// function renderChart(index) {
-//   descriptionContainer.innerText = descriptions[index];
-//   tabButtons.forEach(btn => btn.classList.remove("active"));
-//   tabButtons[index].classList.add("active");
-
-//   setupChartContainer(); 
-
-//   // Load specific charts
-//   switch (index) {
-//     case 1:
-//       renderChart1();
-//       break;
-//     case 2:
-//       renderChart2();
-//       break;
-//     case 3:
-//       renderChart3();
-//       break;
-//     case 4:
-//       renderChart4();
-//       break;
-//     case 5:
-//       renderChart5();
-//       break;
-//     case 6:
-//       renderChart6();
-//       break;
-//     default:
-//       document.getElementById("chart-visual").innerHTML = `<p>[Chart ${index + 1} will go here] - chart-visual</p>`;
-//   }
-// }
-
 function renderChart(index) {
   const home = document.getElementById("home-container");
   const chart = document.getElementById("chart-container");
@@ -80,7 +48,6 @@ function renderChart(index) {
     }
   }
 }
-
 
 tabButtons.forEach((btn, idx) => {
   btn.addEventListener("click", () => renderChart(idx));
