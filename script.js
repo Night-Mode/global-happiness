@@ -61,10 +61,12 @@ function setupChartContainer() {
       <div id="chart-legend"></div>
       <div id="chart-controls"></div>
     </div>
-    <div id="chart-visual"></div>
+    <div id="chart-content">
+      <div id="chart-title">[Chart Title Goes Here]</div>
+      <div id="chart-visual"></div>
+    </div>
   `;
 }
-
 
 // Initial render
 renderChart(0);

@@ -10,6 +10,11 @@ export async function renderChart1() {
   visualContainer.innerHTML = "";
   legendContainer.innerHTML = "";
 
+  const titleElement = document.getElementById("chart-title");
+  if (titleElement) {
+    titleElement.textContent = "Global Happiness Scores";
+  }
+    
   // Append SVG to chart visual
   const rect = visualContainer.getBoundingClientRect();
 
@@ -34,12 +39,14 @@ export async function renderChart1() {
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
   // Add title
-  svg.append("text")
-    .attr("x", 700 / 2)
-    .attr("y", margin.top / 2)
-    .attr("text-anchor", "middle")
-    .style("font", "bold 20px Arial, sans-serif")
-    .text("Global Happiness Scores");
+  // svg.append("text")
+  //   .attr("x", 700 / 2)
+  //   .attr("y", margin.top / 2)
+  //   .attr("text-anchor", "middle")
+  //   .style("font", "bold 20px Arial, sans-serif")
+  //   .text("Global Happiness Scores");
+
+ 
 
   // Load GeoJSON
   const geoData = await d3.json("data/merged_data_195.geojson");
