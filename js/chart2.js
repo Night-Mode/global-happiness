@@ -5,12 +5,16 @@ export async function renderChart2() {
   const visualContainer = document.getElementById("chart-visual");
   const legendContainer = document.getElementById("chart-legend");
   const tooltip = d3.select(".tooltip");
+  
 
   // Clear previous content
   visualContainer.innerHTML = "";
-  legendContainer.innerHTML = "";
+  
+  const titleElement = document.getElementById("chart-title");
+  if (titleElement) {
+    titleElement.textContent = "Happiness Factors";
+  }
 
-  // Append SVG to chart-visual
   // Append SVG to chart visual
   const rect = visualContainer.getBoundingClientRect();
 
@@ -23,8 +27,8 @@ export async function renderChart2() {
   const legendSvg = d3.select(legendContainer)
     .append("svg")
     .attr("id", "legend-svg")
-    .attr("width", 250)
-    .attr("height", 100);
+    .attr("width", 250) // Increase width if needed
+    .attr("height", 100); // Initial height, will resize in createLegend
 
   const margin = { top: 40, right: 80, bottom: 60, left: 80 };
   const width = rect.width - margin.left - margin.right;
@@ -60,12 +64,12 @@ export async function renderChart2() {
     .style("display", "none")
     .style("font", "12px Arial");
 
-  svg.append("text")
-    .attr("x", width / 2)
-    .attr("y", 20)
-    .attr("text-anchor", "middle")
-    .style("font", "bold 20px Arial")
-    .text("Happiness Factors");
+  // svg.append("text")
+  //   .attr("x", width / 2)
+  //   .attr("y", 20)
+  //   .attr("text-anchor", "middle")
+  //   .style("font", "bold 20px Arial")
+  //   .text("Happiness Factors");
 
   function createChart(dataset, yOffset, title, sortKey = "total") {
     const sorted = [...dataset].sort((a, b) =>
@@ -126,83 +130,120 @@ export async function renderChart2() {
       .call(d3.axisLeft(y));
   }
 
+  // function createLegend(sortKey) {
+  //   const legendSvg = d3.select(legendContainer)
+  //     .append("svg")
+  //     .attr("width", 900)
+  //     .attr("height", 100);
+
+  //   const legend = legendSvg.append("g").attr("transform", `translate(${margin.left},10)`);
+  //   const color = d3.scaleOrdinal().domain(keys).range(d3.schemeTableau10);
+
+  //   legend.append("text")
+  //     .attr("x", 0)
+  //     .attr("y", -10)
+  //     .style("font", "14px Arial")
+  //     .style("fill", "#666")
+  //     .text("Click to sort");
+
+  //   legend.selectAll("g")
+  //     .data(["total"].concat(keys))
+  //     .join("g")
+  //     .attr("transform", (d, i) => `translate(${(i % 3) * 200},${Math.floor(i / 3) * 20})`)
+  //     .each(function (d) {
+  //       const g = d3.select(this);
+  //       g.append("rect")
+  //         .attr("width", 15)
+  //         .attr("height", 15)
+  //         .attr("fill", d === "total" ? "#ccc" : color(d))
+  //         .on("click", () => update(d));
+  //       g.append("text")
+  //         .attr("x", 20)
+  //         .attr("y", 12)
+  //         .style("font", "12px Arial")
+  //         .text(d === "total" ? "Total" : d.replace(/^Explained by:\s*/, ""))
+  //         .call(wrap, 180)
+  //         .on("click", () => update(d));
+  //     });
+  // }
+
   function createLegend(sortKey) {
-    const legendSvg = d3.select(legendContainer)
-      .append("svg")
-      .attr("width", 900)
-      .attr("height", 100);
-
-    const legend = legendSvg.append("g").attr("transform", `translate(${margin.left},10)`);
+    // Clear previous legend content
+    legendSvg.selectAll("*").remove();
+  
+    const paddingTop = 20;
+    const rowHeight = 24;
+  
     const color = d3.scaleOrdinal().domain(keys).range(d3.schemeTableau10);
-
+    const allKeys = ["total"].concat(keys);
+    const legendHeight = paddingTop + allKeys.length * rowHeight;
+  
+    // Update height to fit content
+    legendSvg.attr("height", legendHeight);
+  
+    const legend = legendSvg.append("g").attr("transform", `translate(10,${paddingTop})`);
+  
     legend.append("text")
       .attr("x", 0)
       .attr("y", -10)
       .style("font", "14px Arial")
       .style("fill", "#666")
-      .text("Click to sort");
-
-    legend.selectAll("g")
-      .data(["total"].concat(keys))
-      .join("g")
-      .attr("transform", (d, i) => `translate(${(i % 3) * 200},${Math.floor(i / 3) * 20})`)
-      .each(function (d) {
-        const g = d3.select(this);
-        g.append("rect")
-          .attr("width", 15)
-          .attr("height", 15)
-          .attr("fill", d === "total" ? "#ccc" : color(d))
-          .on("click", () => update(d));
-        g.append("text")
-          .attr("x", 20)
-          .attr("y", 12)
-          .style("font", "12px Arial")
-          .text(d === "total" ? "Total" : d.replace(/^Explained by:\s*/, ""))
-          .call(wrap, 180)
-          .on("click", () => update(d));
-      });
+      .text("Click to sort by component");
+  
+    const groups = legend.selectAll("g")
+      .data(allKeys)
+      .enter()
+      .append("g")
+      .attr("transform", (d, i) => `translate(0, ${i * rowHeight})`);
+  
+    groups.append("rect")
+      .attr("width", 15)
+      .attr("height", 15)
+      .attr("fill", d => d === "total" ? "#ccc" : color(d))
+      .style("cursor", "pointer")
+      .on("click", (event, d) => update(d));
+  
+    groups.append("text")
+      .attr("x", 20)
+      .attr("y", 12)
+      .style("font", "12px Arial")
+      .style("cursor", "pointer")
+      .text(d => d === "total" ? "Total" : d.replace(/^Explained by:\s*/, ""))
+      .on("click", (event, d) => update(d));
   }
-
-  function wrap(text, width) {
-    text.each(function () {
-      const text = d3.select(this);
-      const words = text.text().split(/\s+/).reverse();
-      const lineHeight = 1.1;
-      const y = text.attr("y");
-      let line = [];
-      let lineNumber = 0;
-      let tspan = text.text(null).append("tspan").attr("x", 20).attr("y", y);
-      while (words.length) {
-        line.push(words.pop());
-        tspan.text(line.join(" "));
-        if (tspan.node().getComputedTextLength() > width) {
-          line.pop();
-          tspan.text(line.join(" "));
-          line = [words[words.length - 1]];
-          tspan = text.append("tspan")
-            .attr("x", 20)
-            .attr("y", y)
-            .attr("dy", `${++lineNumber * lineHeight}em`)
-            .text(line.pop());
-        }
-      }
-    });
-  }
+  
+  // function wrap(text, width) {
+  //   text.each(function () {
+  //     const text = d3.select(this);
+  //     const words = text.text().split(/\s+/).reverse();
+  //     const lineHeight = 1.1;
+  //     const y = text.attr("y");
+  //     let line = [];
+  //     let lineNumber = 0;
+  //     let tspan = text.text(null).append("tspan").attr("x", 20).attr("y", y);
+  //     while (words.length) {
+  //       line.push(words.pop());
+  //       tspan.text(line.join(" "));
+  //       if (tspan.node().getComputedTextLength() > width) {
+  //         line.pop();
+  //         tspan.text(line.join(" "));
+  //         line = [words[words.length - 1]];
+  //         tspan = text.append("tspan")
+  //           .attr("x", 20)
+  //           .attr("y", y)
+  //           .attr("dy", `${++lineNumber * lineHeight}em`)
+  //           .text(line.pop());
+  //       }
+  //     }
+  //   });
+  // }
 
   function update(newSortKey) {
     svg.selectAll("g").remove();
     svg.select("text").remove();
 
-    svg.append("text")
-      .attr("x", width / 2)
-      .attr("y", 20)
-      .attr("text-anchor", "middle")
-      .style("font", "bold 20px Arial")
-      .text("Happiness Factors");
-
     createChart(top10, 30, "Top 10 Happiest Countries", newSortKey);
     createChart(bottom10, height + 10, "Bottom 10 Happiest Countries", newSortKey);
-    legendContainer.innerHTML = "";
     createLegend(newSortKey);
   }
 

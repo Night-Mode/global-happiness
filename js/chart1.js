@@ -1,10 +1,15 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 export async function renderChart1() {
+  await new Promise(resolve => setTimeout(resolve, 0)); // tiny delay to ensure DOM is ready
+  
   // Select containers
   const visualContainer = document.getElementById("chart-visual");
   const legendContainer = document.getElementById("chart-legend");
   const tooltip = d3.select(".tooltip");
+
+  const uiContainer = document.getElementById("chart-ui");
+  if (uiContainer) uiContainer.style.display = "none";
 
   // Clear previous content
   visualContainer.innerHTML = "";
@@ -14,7 +19,7 @@ export async function renderChart1() {
   if (titleElement) {
     titleElement.textContent = "Global Happiness Scores";
   }
-    
+      
   // Append SVG to chart visual
   const rect = visualContainer.getBoundingClientRect();
 
@@ -24,11 +29,31 @@ export async function renderChart1() {
     .attr("width", rect.width)
     .attr("height", rect.height);
 
-  const legendSvg = d3.select(legendContainer)
-    .append("svg")
-    .attr("id", "legend-svg")
-    .attr("width", 250)
-    .attr("height", 100);
+    const existingFloatingLegend = document.getElementById("map-floating-legend");
+    if (existingFloatingLegend) existingFloatingLegend.remove();
+    
+    // Create a new floating legend div
+    const floatingLegend = document.createElement("div");
+    floatingLegend.id = "map-floating-legend";
+    floatingLegend.style.position = "absolute";
+    floatingLegend.style.bottom = "20px";
+    floatingLegend.style.left = "20px";
+    floatingLegend.style.background = "rgba(255, 255, 255, 0.9)";
+    floatingLegend.style.padding = "0.75rem 1rem";
+    floatingLegend.style.border = "1px solid #ccc";
+    floatingLegend.style.borderRadius = "6px";
+    floatingLegend.style.zIndex = "1000";
+    floatingLegend.style.pointerEvents = "auto"; // allow interaction
+    
+    // Append to the chart container directly
+    document.getElementById("chart-container").appendChild(floatingLegend);
+    
+    // Now create an SVG inside this div
+    const legendSvg = d3.select(floatingLegend)
+      .append("svg")
+      .attr("id", "legend-svg")
+      .attr("width", 300)
+      .attr("height", 50);
 
   const margin = { top: 40, right: 80, bottom: 60, left: 80 };
   const width = rect.width - margin.left - margin.right;
@@ -37,16 +62,6 @@ export async function renderChart1() {
   // Chart group
   const chartGroup = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
-
-  // Add title
-  // svg.append("text")
-  //   .attr("x", 700 / 2)
-  //   .attr("y", margin.top / 2)
-  //   .attr("text-anchor", "middle")
-  //   .style("font", "bold 20px Arial, sans-serif")
-  //   .text("Global Happiness Scores");
-
- 
 
   // Load GeoJSON
   const geoData = await d3.json("data/merged_data_195.geojson");
@@ -103,6 +118,8 @@ export async function renderChart1() {
 
   // Legend
   const legendWidth = 200;
+  const legendYOffset = 18; // Space reserved for title
+
   const gradient = legendSvg.append("defs")
     .append("linearGradient")
     .attr("id", "gradient");
@@ -113,13 +130,15 @@ export async function renderChart1() {
     .attr("offset", d => `${(d / 9) * 100}%`)
     .attr("stop-color", d => colorScale(minScore + (maxScore - minScore) * (d / 9)));
 
-  legendSvg.append("rect")
+    legendSvg.append("rect")
+    .attr("x", 0)
+    .attr("y", legendYOffset)
     .attr("width", legendWidth)
     .attr("height", 10)
     .style("fill", "url(#gradient)");
 
   legendSvg.append("g")
-    .attr("transform", `translate(0, 10)`)
+    .attr("transform", `translate(0, ${legendYOffset + 10})`) // push below gradient
     .call(d3.axisBottom(d3.scaleLinear()
       .domain([minScore, maxScore])
       .range([0, legendWidth]))
@@ -128,23 +147,26 @@ export async function renderChart1() {
     .call(g => g.select(".domain").remove());
 
   legendSvg.append("text")
-    .attr("x", -10)
-    .attr("y", 5)
-    .attr("text-anchor", "end")
-    .style("font-size", "12px")
-    .text("Happiness Score");
+    .attr("x", 0)
+    .attr("y", legendYOffset - 6) // a little padding above the gradient
+    .text("Happiness Ladder Score")
+    .style("font-size", "14px")
+    .style("font-weight", "bold")
+    .style("fill", "#333");
+  
 
   legendSvg.append("rect")
     .attr("x", legendWidth + 10)
-    .attr("y", 0)
+    .attr("y", legendYOffset)
     .attr("width", 20)
     .attr("height", 10)
     .style("fill", "#ccc");
-
+  
   legendSvg.append("text")
     .attr("x", legendWidth + 35)
-    .attr("y", 5)
+    .attr("y", legendYOffset + 9)  // visually centered with the rect
     .attr("text-anchor", "start")
     .style("font-size", "12px")
+    .style("dominant-baseline", "middle")
     .text("No Data");
 }

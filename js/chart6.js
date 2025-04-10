@@ -10,16 +10,31 @@ export async function renderChart6() {
   legendContainer.innerHTML = "";
   controlsContainer.innerHTML = "";
 
+  const titleElement = document.getElementById("chart-title");
+  if (titleElement) {
+    titleElement.textContent = "Regional Variation for Contributing Happiness Factors";
+  }
+
+
   // Load data
   const data = await d3.csv("data/final_merged_regions.csv", d3.autoType);
 
   const dimensions = [
-    "Tech_Level",
-    "Education_Level",
-    "Violence_Level",
-    "Health_Level",
-    "Inequality_Level"
+    "Tech",
+    "Education",
+    "Violence",
+    "Health",
+    "Inequality"
   ];
+
+  const dimensionLabels = {
+    Tech: "Technology Access Level",
+    Education: "Educational Attainment",
+    Violence: "Violence Exposure Level",
+    Health: "Healthy Life Expectancy",
+    Inequality: "Income Inequality Gap"
+  };
+  
 
   // Create dropdown control
   const label = document.createElement("label");
@@ -140,7 +155,7 @@ export async function renderChart6() {
         .attr("height", y(d.q1) - y(d.q3))
         .attr("width", boxWidth)
         .attr("stroke", "black")
-        .attr("fill", "#69b3a2");
+        .attr("fill", "#b2d8d8");
 
       // Median
       g.append("line")

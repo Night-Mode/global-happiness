@@ -11,12 +11,15 @@ export async function renderChart4() {
   controlsContainer.innerHTML = "";
   legendContainer.innerHTML = "";
 
+  const titleElement = document.getElementById("chart-title");
+  if (titleElement) {
+    titleElement.textContent = "SDG Indicators Across Top 6 Data-Rich Countries";
+  }
+
+
   // Chart title + dropdown into controls section
   controlsContainer.innerHTML = `
-    <div style="font: bold 20px Arial, sans-serif; text-align: center; margin-bottom: 10px;">
-      SDG Indicators Across Top 6 Data-Rich Countries
-    </div>
-    <div style="text-align: center; margin-bottom: 10px;">
+    <div style="text-align: left; margin-bottom: 10px;">
       <label for="indicator-select">Indicator:</label>
       <select id="indicator-select"></select>
     </div>
@@ -24,6 +27,15 @@ export async function renderChart4() {
 
   // Append SVG to chart visual
   const rect = visualContainer.getBoundingClientRect();
+
+  const margin = { top: 40, right: 80, bottom: 60, left: 80 };
+  const width = rect.width - margin.left - margin.right;
+  const height = rect.height - margin.top - margin.bottom;
+  // const innerWidth = width - margin.left - margin.right;
+  // const innerHeight = height - margin.top - margin.bottom;
+
+  const innerWidth = width;
+  const innerHeight = height;
 
   const svg = d3.select(visualContainer)
     .append("svg")
@@ -36,6 +48,7 @@ export async function renderChart4() {
     .attr("id", "legend-svg")
     .attr("width", 250)
     .attr("height", 100);
+    
   const data = await d3.json("data/top_6_data_countries.json");
   data.forEach(d => d.Year = +d.Year);
 
@@ -54,12 +67,6 @@ export async function renderChart4() {
     .append("option")
     .attr("value", d => d.key)
     .text(d => d.label);
-
-  const margin = { top: 40, right: 80, bottom: 60, left: 80 };
-  const width = rect.width - margin.left - margin.right;
-  const height = rect.height - margin.top - margin.bottom;
-  const innerWidth = width - margin.left - margin.right;
-  const innerHeight = height - margin.top - margin.bottom;
 
   const chart = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -118,6 +125,7 @@ export async function renderChart4() {
       .attr("x", innerWidth / 2)
       .attr("y", 35)
       .attr("text-anchor", "middle")
+      .style("font-size", "16px")
       .text("Year");
 
     chart.append("g")
@@ -129,25 +137,29 @@ export async function renderChart4() {
       .attr("y", -45)
       .attr("x", -innerHeight / 2)
       .attr("text-anchor", "middle")
+      .style("font-size", "16px")
       .text(indicators.find(i => i.key === selectedIndicator).label);
+      
 
     // Title on top of SVG (optional if already in controls)
-    svg.append("text")
-      .attr("class", "title")
-      .attr("x", width / 2)
-      .attr("y", 20)
-      .attr("text-anchor", "middle")
-      .text(`${indicators.find(i => i.key === selectedIndicator).label} (2015–2023)`);
-
     // Render legend inside #chart-legend
     const legendSvg = d3.select(legendContainer)
       .append("svg")
       .attr("width", 250)
-      .attr("height", countries.length * 25);
+      .attr("height", countries.length * 25 + 30); // extra space for title
 
     const legend = legendSvg.append("g")
-      .attr("transform", `translate(10, 10)`);
+      .attr("transform", `translate(10, 30)`); // shifted down for title space
 
+    // Add legend title
+    legend.append("text")
+      .attr("x", 0)
+      .attr("y", -10)
+      .attr("font-size", "16px")
+      .attr("font-weight", "bold")
+      .text("Country Legend");
+
+    // Legend items
     legend.selectAll("rect")
       .data(countries)
       .enter()
@@ -158,14 +170,15 @@ export async function renderChart4() {
       .attr("height", 15)
       .attr("fill", d => colorScale(d));
 
-    legend.selectAll("text")
+    legend.selectAll("text.label")
       .data(countries)
       .enter()
       .append("text")
+      .attr("class", "label")
       .attr("x", 20)
       .attr("y", (d, i) => i * 25 + 12)
       .text(d => d)
-      .style("font-size", "12px");
+      .style("font-size", "16px");
   }
 
   // Default selection and render
