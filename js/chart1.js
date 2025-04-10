@@ -114,7 +114,14 @@ export async function renderChart1() {
     .scaleExtent([1, 8])
     .translateExtent([[0, 0], [width, height]])
     .on("zoom", (event) => chartGroup.attr("transform", event.transform));
+  
   svg.call(zoom);
+
+  // Apply default zoom transform (e.g., 1.2x)
+  const defaultScale = 1.5;
+  const defaultTranslate = [-(width * (defaultScale - 1)) / 2, -(height * (defaultScale - 1)) / 2];
+  svg.call(zoom.transform, d3.zoomIdentity.translate(...defaultTranslate).scale(defaultScale));
+
 
   // Legend
   const legendWidth = 200;
