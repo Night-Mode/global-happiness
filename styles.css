@@ -10,7 +10,7 @@ body {
 header {
   background-color: #333;
   color: white;
-  padding: 1rem; /* Increased from 1rem for more top space */
+  padding: 1rem; 
   text-align: center;
 }
 
@@ -18,7 +18,7 @@ header {
   display: flex;
   justify-content: center;
   background-color: #f4f4f4;
-  padding: 1rem; /* Increased from 0.5rem for more space */ 
+  padding: 1rem; 
 }
 
 .tab {
@@ -47,16 +47,16 @@ main {
   align-items: center;
   padding: 0 2rem 2rem 2rem;
   margin: 0 auto;
-  max-width: 1800px;     /* Caps it */
-  width: 100%;           /* Allows it to scale down */
+  max-width: 1800px;     
+  width: 100%;          
   box-sizing: border-box;
   overflow-x: hidden;
-  align-items: flex-start;    /*  Prevents child overflow from stretching */
+  align-items: flex-start;    
 }
 
 #home-container {
   width: 1500px;
-  height: 600px;               /* 👈 Match the chart height */
+  height: 600px;             
   margin: 0 auto 2rem auto; 
   padding: 1rem;
   background-color: #fff;
@@ -69,11 +69,11 @@ main {
   flex-direction: row;
   gap: 2rem;
 
-  width: 1500px;          /* Fixed width to stabilize layout */
+  width: 1500px;          
   min-height: 600px; 
-  height: auto;         /* Fixed height for consistent vertical space */
+  height: auto;         
 
-  margin: 0 auto 2rem auto;       /* Centers the container horizontally */
+  margin: 0 auto 2rem auto;      
   padding: 1rem;
 
   background-color: #fff;
@@ -82,12 +82,12 @@ main {
   position: relative;
   align-items: stretch; 
 
-  align-self: flex-start; /* Ensures left alignment inside .content if needed */
+  align-self: flex-start; 
 }
 
 #chart-ui {
   width: 250px;
-  height: 100%;            /* Fill height of #chart-container */
+  height: 100%;           
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -114,7 +114,7 @@ main {
   border: 1px solid #ccc;
   border-radius: 6px;
   z-index: 10;
-  width: auto;     /* Allow to size based on content */
+  width: auto;    
   height: auto;
 }
 
@@ -170,7 +170,7 @@ main {
   box-sizing: border-box;
   overflow: visible; 
   flex: 1 1 auto;
-  min-height: 500px;  /* or whatever your base height is */           /* Prevents overflowing content like wide SVGs */
+  min-height: 500px;  
 }
 
 #description {
@@ -184,19 +184,19 @@ main {
   top: 20px;
   right: 20px;
   padding-top: 1rem;
-  padding: 1rem 1.5rem;         /* Increased padding */
+  padding: 1rem 1.5rem;        
 
   border-radius: 6px;
   pointer-events: none;
 
-  display: flex;                /* Optional: helps align contents */
+  display: flex;               
   flex-direction: column;
-  align-items: flex-start;      /* Align legend items left */
-  gap: 0.5rem;                  /* Adds vertical spacing between children */
+  align-items: flex-start;     
+  gap: 0.5rem;                 
 }
 
 #legend-svg {
-  width: 100%;
+  width: 300px;
   height: auto;
   margin-top: 1rem;
 }
@@ -210,7 +210,7 @@ footer {
   color: white;
   padding: 1rem;
   text-align: center;
-  margin-top: 2rem; /* Space above footer */
+  margin-top: 2rem; 
 }
 
 .tooltip {

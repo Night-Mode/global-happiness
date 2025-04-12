@@ -24,8 +24,8 @@ export async function renderChart2() {
   const legendSvg = d3.select(legendContainer)
     .append("svg")
     .attr("id", "legend-svg")
-    .attr("width", 250)
-    .attr("height", 100);
+    .attr("width", 300)
+    .attr("height", 250);
 
   const margin = { top: 40, right: 80, bottom: 70, left: 80 };
   const width = rect.width - margin.left - margin.right;
