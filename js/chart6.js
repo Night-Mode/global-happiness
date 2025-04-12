@@ -83,7 +83,7 @@ export async function renderChart6() {
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
     // Group by region
-    const grouped = d3.groups(data, d => d.region).map(([region, entries]) => {
+    const grouped = d3.groups(data, d => d.subregion).map(([subregion, entries]) => {
       const valid = entries.filter(d => {
         const val = d[selectedDimension];
         return val != null && !isNaN(val);
@@ -108,7 +108,7 @@ export async function renderChart6() {
       });
 
       return {
-        region,
+        subregion,
         q1,
         q3,
         median: d3.quantile(values, 0.5),
@@ -120,7 +120,9 @@ export async function renderChart6() {
 
     const x = d3
       .scaleBand()
-      .domain(["Africa", "Americas", "Asia", "Europe", "Oceania"])
+      .domain(['Southern Europe', 'North Africa', 'South America', 'Eastern Europe', 'Australia & New Zealand', 'Western Europe', 
+        'West Asia', 'South Asia', 'West Africa', 'Southern Africa', 'Central Africa', 'North America', 'Central America', 
+        'Northern Europe', 'Southeast Asia', 'East Asia', 'Central Asia', 'South Africa'])
       .range([0, width])
       .padding(0.3);
 
@@ -146,11 +148,11 @@ export async function renderChart6() {
     // Boxplot drawing
     grouped.forEach(d => {
       const boxWidth = x.bandwidth();
-      const cx = x(d.region) + boxWidth / 2;
+      const cx = x(d.subregion) + boxWidth / 2;
 
       // Box
       g.append("rect")
-        .attr("x", x(d.region))
+        .attr("x", x(d.subregion))
         .attr("y", y(d.q3))
         .attr("height", y(d.q1) - y(d.q3))
         .attr("width", boxWidth)
@@ -159,8 +161,8 @@ export async function renderChart6() {
 
       // Median
       g.append("line")
-        .attr("x1", x(d.region))
-        .attr("x2", x(d.region) + boxWidth)
+        .attr("x1", x(d.subregion))
+        .attr("x2", x(d.subregion) + boxWidth)
         .attr("y1", y(d.median))
         .attr("y2", y(d.median))
         .attr("stroke", "black");
@@ -185,7 +187,7 @@ export async function renderChart6() {
         .attr("stroke", "black");
 
       // Outliers
-      g.selectAll(`.outlier-${d.region}`)
+      g.selectAll(`.outlier-${d.subregion}`)
         .data(d.outliers)
         .enter()
         .append("circle")

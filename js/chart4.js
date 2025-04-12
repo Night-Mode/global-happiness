@@ -16,7 +16,6 @@ export async function renderChart4() {
     titleElement.textContent = "SDG Indicators Across Top 6 Data-Rich Countries";
   }
 
-
   // Chart title + dropdown into controls section
   controlsContainer.innerHTML = `
     <div style="text-align: left; margin-bottom: 10px;">
@@ -31,9 +30,6 @@ export async function renderChart4() {
   const margin = { top: 40, right: 80, bottom: 60, left: 80 };
   const width = rect.width - margin.left - margin.right;
   const height = rect.height - margin.top - margin.bottom;
-  // const innerWidth = width - margin.left - margin.right;
-  // const innerHeight = height - margin.top - margin.bottom;
-
   const innerWidth = width;
   const innerHeight = height;
 
@@ -116,48 +112,53 @@ export async function renderChart4() {
       .attr("stroke", d => d3.color(colorScale(d.country)).darker(1))
       .attr("stroke-width", 1);
 
-    chart.append("g")
+    const xAxis = chart.append("g")
       .attr("class", "axis")
       .attr("transform", `translate(0,${innerHeight})`)
-      .call(d3.axisBottom(xScale).tickFormat(d3.format("d")))
-      .append("text")
+      .call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
+    
+    xAxis.selectAll("text").style("font-size", "14px");
+    
+    xAxis.append("text")
       .attr("fill", "black")
       .attr("x", innerWidth / 2)
-      .attr("y", 35)
+      .attr("y", 50)
       .attr("text-anchor", "middle")
-      .style("font-size", "16px")
+      .style("font-size", "18px")
       .text("Year");
 
-    chart.append("g")
+    const yAxis = chart.append("g")
       .attr("class", "axis")
-      .call(d3.axisLeft(yScale))
-      .append("text")
+      .call(d3.axisLeft(yScale));
+    
+    yAxis.selectAll("text").style("font-size", "14px");
+    
+    yAxis.append("text")
       .attr("fill", "black")
       .attr("transform", "rotate(-90)")
-      .attr("y", -45)
+      .attr("y", -50)
       .attr("x", -innerHeight / 2)
       .attr("text-anchor", "middle")
-      .style("font-size", "16px")
+      .style("font-size", "18px")
       .text(indicators.find(i => i.key === selectedIndicator).label);
       
-
-    // Title on top of SVG (optional if already in controls)
-    // Render legend inside #chart-legend
     const legendSvg = d3.select(legendContainer)
       .append("svg")
       .attr("width", 250)
-      .attr("height", countries.length * 25 + 30); // extra space for title
+      .attr("height", countries.length * 25 + 50); 
 
+    // Add legend title separately
+    legendSvg.append("text")
+    .attr("x", 10)
+    .attr("y", 20)
+    .attr("font-size", "18px")
+    .attr("font-weight", "bold")
+    .text("Country Legend");
+
+    // Add legend items in a separate group, pushed further down
     const legend = legendSvg.append("g")
-      .attr("transform", `translate(10, 30)`); // shifted down for title space
+    .attr("transform", `translate(10, 45)`);  // ← moved down from 30 to 45
 
-    // Add legend title
-    legend.append("text")
-      .attr("x", 0)
-      .attr("y", -10)
-      .attr("font-size", "16px")
-      .attr("font-weight", "bold")
-      .text("Country Legend");
 
     // Legend items
     legend.selectAll("rect")
@@ -167,7 +168,7 @@ export async function renderChart4() {
       .attr("x", 0)
       .attr("y", (d, i) => i * 25)
       .attr("width", 15)
-      .attr("height", 15)
+      .attr("height", 20)
       .attr("fill", d => colorScale(d));
 
     legend.selectAll("text.label")
@@ -176,7 +177,7 @@ export async function renderChart4() {
       .append("text")
       .attr("class", "label")
       .attr("x", 20)
-      .attr("y", (d, i) => i * 25 + 12)
+      .attr("y", (d, i) => i * 25 + 15)
       .text(d => d)
       .style("font-size", "16px");
   }

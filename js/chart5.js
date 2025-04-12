@@ -19,6 +19,9 @@ export async function renderChart5() {
   controlsContainer.innerHTML = `
     <label for="country-select"><strong>Select up to 6 Countries:</strong></label>
     <select id="country-select" multiple size="10" style="width: 100%;"></select>
+    <p style="font-size: 16px;">
+      <em>Hold control to select multiple countries.</em>
+    </p>
   `;
 
   const select = document.getElementById("country-select");

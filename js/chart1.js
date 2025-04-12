@@ -1,7 +1,7 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 export async function renderChart1() {
-  await new Promise(resolve => setTimeout(resolve, 0)); // tiny delay to ensure DOM is ready
+  await new Promise(resolve => setTimeout(resolve, 0)); 
   
   // Select containers
   const visualContainer = document.getElementById("chart-visual");
@@ -43,7 +43,7 @@ export async function renderChart1() {
     floatingLegend.style.border = "1px solid #ccc";
     floatingLegend.style.borderRadius = "6px";
     floatingLegend.style.zIndex = "1000";
-    floatingLegend.style.pointerEvents = "auto"; // allow interaction
+    floatingLegend.style.pointerEvents = "auto"; 
     
     // Append to the chart container directly
     document.getElementById("chart-container").appendChild(floatingLegend);
@@ -117,10 +117,26 @@ export async function renderChart1() {
   
   svg.call(zoom);
 
-  // Apply default zoom transform (e.g., 1.2x)
+  // Get projected bounds of the geo features
+  const bounds = path.bounds(geoData);
+  const mapWidth = bounds[1][0] - bounds[0][0];
+  const mapHeight = bounds[1][1] - bounds[0][1];
+  const mapCenterX = (bounds[0][0] + bounds[1][0]) / 2;
+  const mapCenterY = (bounds[0][1] + bounds[1][1]) / 2;
+
+  // Desired scale factor
   const defaultScale = 1.5;
-  const defaultTranslate = [-(width * (defaultScale - 1)) / 2, -(height * (defaultScale - 1)) / 2];
-  svg.call(zoom.transform, d3.zoomIdentity.translate(...defaultTranslate).scale(defaultScale));
+
+  // Compute translation to center the map in the SVG
+  const translateX = width / 2 - mapCenterX * defaultScale + margin.left;
+  const translateY = height / 2 - mapCenterY * defaultScale + margin.top;
+
+  svg.call(
+    zoom.transform,
+    d3.zoomIdentity
+      .translate(translateX, translateY)
+      .scale(defaultScale)
+  );
 
 
   // Legend

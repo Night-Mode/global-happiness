@@ -18,7 +18,7 @@ export async function renderChart3() {
 
   // Create dropdowns with helpful instruction
   controlsContainer.innerHTML = `
-    <p style="margin-bottom: 0.5rem; font-size: 14px;">
+    <p style="margin-bottom: 0.5rem; font-size: 16px;">
       <em>Select variables for the X and Y axes to explore relationships with happiness scores.</em>
     </p>
     <label for="x-axis"><strong>X-Axis:</strong></label>
@@ -51,7 +51,7 @@ export async function renderChart3() {
   const xAxisLabel = chartGroup.append("text")
     .attr("class", "x-axis-label")
     .attr("x", width / 2)
-    .attr("y", height + 40)
+    .attr("y", height + 50)
     .attr("text-anchor", "middle")
     .attr("font-size", "18px");
 
@@ -126,7 +126,7 @@ items.append("rect")
 
 items.append("text")
   .attr("x", 24)
-  .attr("y", 13)
+  .attr("y", 15)
   .attr("font-size", "16px")
   .text(d => d.label);
 
@@ -138,8 +138,12 @@ function updateChart() {
   xScale.domain(d3.extent(data, d => d[xAttr]));
   yScale.domain(d3.extent(data, d => d[yAttr]));
 
-  xAxisGroup.transition().duration(500).call(d3.axisBottom(xScale));
-  yAxisGroup.transition().duration(500).call(d3.axisLeft(yScale));
+  xAxisGroup.transition().duration(500).call(d3.axisBottom(xScale))
+  .selectAll("text")
+  .style("font-size", "14px");
+  yAxisGroup.transition().duration(500).call(d3.axisLeft(yScale))
+  .selectAll("text")
+  .style("font-size", "14px"); ;
   xAxisLabel.text(xAttr);
   yAxisLabel.text(yAttr);
 
