@@ -6,6 +6,20 @@ export async function renderChart4() {
   const controlsContainer = document.getElementById("chart-controls");
   const legendContainer = document.getElementById("chart-legend");
 
+  // Create or select subtitle element
+  let subtitleElement = document.getElementById("chart-subtitle");
+  if (!subtitleElement) {
+    subtitleElement = document.createElement("div");
+    subtitleElement.id = "chart-subtitle";
+    subtitleElement.style.fontSize = "18px";
+    subtitleElement.style.fontWeight = "normal";
+    subtitleElement.style.marginTop = "10px";
+    subtitleElement.style.marginBottom = "10px";
+    subtitleElement.style.textAlign = "center";
+    document.getElementById("chart-title").after(subtitleElement);
+  }
+
+
   // Clear previous content
   visualContainer.innerHTML = "";
   controlsContainer.innerHTML = "";
@@ -74,6 +88,11 @@ export async function renderChart4() {
 
   function updateChart() {
     const selectedIndicator = indicatorSelect.property("value");
+
+    const selected = indicators.find(i => i.key === selectedIndicator);
+    if (subtitleElement && selected) {
+      subtitleElement.textContent = `Indicator: ${selected.label}`;
+    }
 
     const groupedData = d3.groups(data, d => d.Country)
       .map(([country, values]) => ({
