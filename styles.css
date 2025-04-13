@@ -41,6 +41,17 @@ main {
   margin: 0 auto;
 }
 
+.home-image {
+  float: right;
+  margin-left: 20px;
+  margin-bottom: 10px;
+  width: 500px;           /* fixed smaller width */
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1); /* optional: soft shadow for style */
+}
+
 .content {
   display: flex;
   flex-direction: column;
