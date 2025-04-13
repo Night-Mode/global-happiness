@@ -15,7 +15,6 @@ export async function renderChart6() {
     titleElement.textContent = "Regional Variation for Contributing Happiness Factors";
   }
 
-
   // Load data
   const data = await d3.csv("data/final_merged_regions.csv", d3.autoType);
 
@@ -28,14 +27,45 @@ export async function renderChart6() {
   ];
 
   const dimensionLabels = {
-    Tech: "Technology Access Level",
-    Education: "Educational Attainment",
-    Violence: "Violence Exposure Level",
-    Health: "Healthy Life Expectancy",
-    Inequality: "Income Inequality Gap"
+    Tech: "Technology Access Level (IDI Score)",
+    Education: "Educational Attainment (Learning-adjusted Years of Schooling)",
+    Violence: "Violence Exposure Level - Annual Incidents of Violent Crime (Log Scale)",
+    Health: "Health System Security (GHSI Index)",
+    Inequality: "Income Inequality Gap (Gini Coefficient)"
   };
   
+  const dimensionDropdownLabels = {
+    Tech: "Technology Access",
+    Education: "Education Levels",
+    Violence: "Violence Exposure",
+    Health: "Healthcare Security",
+    Inequality: "Income Inequality Gap"
+  };
 
+  const regionGroups = {
+    "Northern Europe": "Europe",
+    "Southern Europe": "Europe",
+    "Eastern Europe": "Europe",
+    "Western Europe": "Europe",
+  
+    "North Africa": "Africa",
+    "Central Africa": "Africa",
+    "West Africa": "Africa",
+    "Southern Africa": "Africa",  
+  
+    "South Asia": "Asia",
+    "Southeast Asia": "Asia",
+    "East Asia": "Asia",
+    "Central Asia": "Asia",
+    "Middle East": "Asia",
+  
+    "North America": "Americas",
+    "Central America": "Americas",
+    "South America": "Americas",
+  
+    "Oceania": "Oceania"
+  };
+  
   // Create dropdown control
   const label = document.createElement("label");
   label.textContent = "Select Dimension: ";
@@ -46,7 +76,8 @@ export async function renderChart6() {
   dimensions.forEach(dim => {
     const option = document.createElement("option");
     option.value = dim;
-    option.textContent = dim.replace("_Level", "");
+    option.textContent = dimensionDropdownLabels[dim];
+
     select.appendChild(option);
   });
 
@@ -68,7 +99,7 @@ export async function renderChart6() {
     
     const rect = visualContainer.getBoundingClientRect();
     
-    const margin = { top: 40, right: 80, bottom: 60, left: 80 };
+    const margin = { top: 60, right: 80, bottom: 100, left: 80 };
     const width = rect.width - margin.left - margin.right;
     const height = rect.height - margin.top - margin.bottom;
 
@@ -77,6 +108,15 @@ export async function renderChart6() {
       .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom);
+
+    // Add dynamic subtitle
+    svg.append("text")
+    .attr("x", (width + margin.left + margin.right) / 2)
+    .attr("y", 30)
+    .attr("text-anchor", "middle")
+    .style("font-size", "18px")
+    .style("fill", "#555")
+    .text(dimensionLabels[selectedDimension]);
 
     const g = svg
       .append("g")
@@ -118,29 +158,46 @@ export async function renderChart6() {
       };
     });
 
-    const x = d3
-      .scaleBand()
-      .domain(['Southern Europe', 'North Africa', 'South America', 'Eastern Europe', 'Australia & New Zealand', 'Western Europe', 
-        'West Asia', 'South Asia', 'West Africa', 'Southern Africa', 'Central Africa', 'North America', 'Central America', 
-        'Northern Europe', 'Southeast Asia', 'East Asia', 'Central Asia', 'South Africa'])
+    const subregionsSorted = Object.entries(regionGroups)
+      .sort((a, b) => d3.ascending(a[1], b[1]) || d3.ascending(a[0], b[0]))
+      .map(d => d[0]);
+
+    const x = d3.scaleBand()
+      .domain(subregionsSorted)
       .range([0, width])
       .padding(0.3);
 
-    const y = d3
-      .scaleLinear()
-      .domain([
-        d3.min(grouped, d => Math.min(d.min, ...d.outliers.map(o => o[selectedDimension]))),
-        d3.max(grouped, d => Math.max(d.max, ...d.outliers.map(o => o[selectedDimension])))
-      ])
-      .nice()
-      .range([height, 0]);
+    const isLogScale = selectedDimension === "Violence";
+
+    const y = isLogScale
+      ? d3.scaleLog()
+          .domain([
+            Math.max(1, d3.min(grouped, d => Math.min(d.min, ...d.outliers.map(o => o[selectedDimension])))),
+            d3.max(grouped, d => Math.max(d.max, ...d.outliers.map(o => o[selectedDimension])))
+          ])
+          .range([height, 0])
+          .nice()
+      : d3.scaleLinear()
+          .domain([
+            d3.min(grouped, d => Math.min(d.min, ...d.outliers.map(o => o[selectedDimension]))),
+            d3.max(grouped, d => Math.max(d.max, ...d.outliers.map(o => o[selectedDimension])))
+          ])
+          .range([height, 0])
+          .nice();
 
     // Axes
     g.append("g")
-      .attr("transform", `translate(0,${height})`)
-      .call(d3.axisBottom(x));
+    .attr("transform", `translate(0,${height})`)
+    .call(d3.axisBottom(x))
+    .selectAll("text")
+    .attr("transform", "rotate(-40)")
+    .style("text-anchor", "end")
+    .style("font-size", "16px");
+  
 
-    g.append("g").call(d3.axisLeft(y));
+    g.append("g").call(d3.axisLeft(y))
+    .selectAll("text")
+    .style("font-size", "14px");
 
     // Tooltip
     const tooltip = d3.select(".tooltip");
