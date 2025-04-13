@@ -73,7 +73,7 @@ const descriptions = [
 `
 ,
 `
-<h3>Box Plot: Regional Distributions of Well-Being Dimensions</h3>
+<h3>Regional Distributions of Well-Being Dimensions</h3>
 <p>
   This box plot visualization uses the same five dimensions from the radar plot—drawn from external data sources not included in the World Happiness Report. 
   Instead of focusing on individual countries, this chart highlights regional variations in each dimension.
