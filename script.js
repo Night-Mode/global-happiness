@@ -93,8 +93,8 @@ const descriptions = [
   to regional trends and disparities.
 </p>
 `
-];
 
+];
 
 const tabButtons = document.querySelectorAll(".tab");
 const descriptionContainer = document.getElementById("description");
