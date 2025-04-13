@@ -59,7 +59,7 @@ export async function renderChart5() {
       { key: "Tech_Level", label: "Tech" },
       { key: "Violence_Level", label: "Violence" },
       { key: "Health_Level", label: "Health" },
-      { key: "Inequality_Level", label: "Inequality" }
+      { key: "Inequality_Level", label: "Income Gap" }
     ];
 
     const angleSlice = (2 * Math.PI) / dimensions.length;
