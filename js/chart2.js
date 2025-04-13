@@ -160,7 +160,7 @@ export async function renderChart2() {
       .attr("y", 15)
       .style("font", "18px Arial")
       .style("fill", "#666")
-      .text("Click to sort by component");
+      .text("Click to sort by a component");
 
     const groups = legend.selectAll("g")
       .data(allKeys)

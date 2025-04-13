@@ -18,8 +18,8 @@
       <button class="tab" data-chart="1">Global Happiness Map</button>
       <button class="tab" data-chart="2">Happiness Factors</button>
       <button class="tab" data-chart="3">Correlations</button>
-      <button class="tab" data-chart="4">SDG Indicators</button>
       <button class="tab" data-chart="5">Contributing Factors</button>
+      <button class="tab" data-chart="4">SDG Indicators</button>
       <button class="tab" data-chart="6">Regional Comparisons</button>
     </div>
   
@@ -30,9 +30,13 @@
       
         <h3>Purpose</h3>
         <p>
-          This web page presents an interactive dashboard that explores the statistics driving global happiness.
-          Using a series of visualizations, users can examine how different social, economic, and health-related
+          This web page presents an interactive dashboard that explores the statistics driving global happiness. 
+          Using a series of visualizations, users can examine how different social, economic, and health-related 
           factors contribute to happiness scores across countries.
+
+          The project utilizes data from reputable sources such as the World Happiness Report, 
+          World Health Organization, Global Health Security Index, and others to quantify and interpret 
+          global happiness through various explanatory variables. 
         </p>
       
         <h3>Approach</h3>
@@ -40,6 +44,16 @@
           The foundation of our analysis is the 2024 World Happiness Report, which provides ladder scores and key
           explanatory variables. To expand our understanding, we integrated additional indicators—from digital access
           to crime rates—to explore their potential relationships with national happiness levels.
+
+          These ideas are explored and visualized throughout the website using libraries like JavaScript’s D3 tools. 
+          D3 enables scientists to create detailed and visually appealing representations of complex relationships 
+          between data attributes, helping to uncover factors that may influence key outcomes. 
+          In this case, visualizations such as choropleth maps, stacked bar charts, spider plots, and box plots
+          support the idea that a country’s economic and demographic characteristics
+          
+          can <br>significantly impact the overall happiness of its society.
+
+
         </p>
       
         <h3>Data Sources</h3>
@@ -96,6 +110,7 @@
           <div id="chart-visual"></div>
         </div>
       </div>
+    
       <div id="description"></div>
     </div>
   </main>

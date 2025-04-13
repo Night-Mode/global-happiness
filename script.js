@@ -7,10 +7,54 @@ import { renderChart5 } from "./js/chart5.js";
 import { renderChart6 } from "./js/chart6.js";
 
 const descriptions = [
-  "Stacked bar chart showing happiness factors for top 10 and bottom 10 countries with interactive sorting.",
-  "Area chart displaying SDG indicators across top 6 data-rich countries with indicator selection.",
-  `
-    <h3>Exploring Relationships Between Happiness Factors</h3>
+  `<h3>Global Happiness Scores Overview</h3>
+<p>
+  The first plot in this series presents “Happiness Scores” from the 2024 World Happiness Report, based on data collected between 2021 and 2023. 
+  These scores, also known as ladder scores, originate from the Gallup World Poll, which includes survey questions related to individual life evaluations.
+</p>
+<p>
+  The dataset covers 143 countries and incorporates metrics such as social support, generosity, and perceptions of corruption, which are explored in detail in subsequent charts. 
+  Here, the scores are visualized using a D3 choropleth map, created by merging World Happiness Report data with a GeoJSON resource to obtain geospatial coordinates (Open Data Commons Public Domain).
+</p>
+<p>
+  To enhance accessibility, the chart includes zoom functionality and hover labels displaying country names and their corresponding scores. 
+  Key insights reveal that countries in North America and Europe generally report higher happiness scores compared to those in Africa and Asia. 
+  However, some countries lacked data, which may affect regional comparisons—these gaps are clearly labeled in the visualization.
+  <br> <br> The report also compares current scores to those from 2006-2010, providing deeper insights into population aggregates. 
+  Key insights mentioned within the World Health Report from this comparison include:
+</p>
+<ul>
+  <li>Happiness inequality persists in all continents except Europe.</li>
+  <li>Social interaction is a key predictor of happiness.</li>
+  <li>Females report a higher prevalence of negative emotions across all regions.</li>
+</ul>
+<p>
+  Overall, this introductory chart offers a broad overview of global happiness levels, serving as a meaningful entry point into the deeper analyses that follow.
+</p>`,
+
+  `<h3>Key Factors Behind Happiness Scores</h3>
+<p>
+  The second chart in this series builds on the initial analysis by visualizing the six key explanatory variables behind happiness scores. 
+  It uses a stacked bar chart to display data for the ten happiest and ten least happy countries, as reported in the 2024 World Happiness Report.
+</p>
+<p>
+  Inspired by the original report, this version enhances user engagement with interactivity, including sorting by specific variables and hover features that show exact percentages for each country and variable. 
+  These additions improve accessibility and allow for deeper exploration of the data.
+</p>
+<p>
+  The visualization reveals that many of the happiest countries, such as Norway, Finland, and Switzerland, are in Europe, reinforcing trends observed in Chart 1. 
+  GDP per capita emerges as a major factor, highlighting the role of economic prosperity in well-being. Additional insights from this include:
+</p>
+<ul>
+  <li>Social support and healthy life expectancy are stronger predictors of happiness than generosity or perceptions of corruption.</li>
+  <li>Interactivity allows users to see the proportion explained by a certain variable and its impact within a certain country.</li>
+</ul>
+<p>
+  This type of visualization is particularly valuable for data scientists, aiding in the selection of relevant features for machine learning models aimed at predicting or explaining happiness outcomes. 
+  By examining which attributes most benefit different countries, users gain deeper insights into global well-being patterns.
+</p>`,
+
+  `<h3>Exploring Relationships Between Happiness Factors</h3>
     <p>
       This scatterplot allows users to dynamically explore relationships between different variables from the 2024 World Happiness Report. 
       Users can select any two contributing factors—such as GDP per capita, social support, or freedom to make life choices—to assign to the X and Y axes.
@@ -33,7 +77,6 @@ const descriptions = [
       on the reported happiness scores. If no clear pattern emerges, that combination may not have contributed significantly to the overall score.
     </p>
   `,
-  "World map visualizing global happiness scores with zoom and tooltip.",
   `
 <h3>Comparing Additional Well-Being Dimensions Across Countries</h3>
 <p>
@@ -70,8 +113,31 @@ const descriptions = [
   This chart is useful for discovering how countries compare in areas beyond the core happiness factors and identifying 
   possible contributors to national well-being that are not explicitly included in the World Happiness Report.
 </p>
-`
-,
+`,
+  `<h3>Trends in Sustainable Development Indicators</h3>
+<p>
+  This chart integrates the World Health Organization’s Sustainable Development Goals (SDG) dataset to explore demographic and economic indicators that may explain the happiness scores from Charts 1 and 2. 
+  It uses a stacked area chart to track under-five mortality rates, secondary education completion, and unemployment rates from 2015 to 2023.
+</p>
+<p>
+  Initially intended to cover both the happiest and least happy countries, the chart focuses on six top-performing nations—Finland, Iceland, Israel, Norway, Sweden, and Switzerland—due to their consistent data across all indicators. 
+  It's important to note, however, that these countries, mostly found in Europe, may introduce regional bias, as higher-income nations often report more thorough data.
+</p>
+<p>
+  The visualization reveals interesting trends. For instance, Norway and Switzerland maintain low unemployment rates (typically under 5%).
+  Interestingly, Sweden and Finland show slightly higher mortality rates, possibly due to differences in population structure or reporting practices.
+</p>
+
+<p> Important definitions for indicators as mentioned in the SGD report:</p>
+<ul>
+  <li>Under-five mortality rate: Number of deaths per 1,000 live births for children under age five.</li>
+  <li>Secondary education rate: Percentage of youth completing secondary school in a given year.</li>
+  <li>Unemployment rate: Share of the labor force not currently employed but actively seeking work.</li>
+  <li>Labor force: Total of all people who are either employed or unemployed (and seeking work).</li>
+</ul>
+<p>
+  Building on the choropleth and stacked bar charts, this area chart illustrates how key well-being indicators evolve over time in countries with high data quality, offering insights into the factors supporting happiness.
+</p>`,
 `
 <h3>Regional Distributions of Well-Being Dimensions</h3>
 <p>
@@ -93,8 +159,8 @@ const descriptions = [
   to regional trends and disparities.
 </p>
 `
-
 ];
+
 
 const tabButtons = document.querySelectorAll(".tab");
 const descriptionContainer = document.getElementById("description");
@@ -123,8 +189,8 @@ function renderChart(index) {
       case 1: renderChart1(); break;
       case 2: renderChart2(); break;
       case 3: renderChart3(); break;
-      case 4: renderChart4(); break;
-      case 5: renderChart5(); break;
+      case 4: renderChart5(); break;
+      case 5: renderChart4(); break;
       case 6: renderChart6(); break;
     }
   }
