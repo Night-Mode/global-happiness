@@ -19,7 +19,6 @@ export async function renderChart4() {
     document.getElementById("chart-title").after(subtitleElement);
   }
 
-
   // Clear previous content
   visualContainer.innerHTML = "";
   controlsContainer.innerHTML = "";
@@ -53,18 +52,60 @@ export async function renderChart4() {
     .attr("width", rect.width)
     .attr("height", rect.height);
 
-  const legendSvg = d3.select(legendContainer)
-    .append("svg")
-    .attr("id", "legend-svg")
-    .attr("width", 250)
-    .attr("height", 100);
-    
-  const data = await d3.json("data/top_6_data_countries.json");
+  const chart = svg.append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  // Define glow filter with darker border
+  const defs = svg.append("defs");
+  const filter = defs.append("filter")
+    .attr("id", "glow")
+    .attr("x", "-50%")
+    .attr("y", "-50%")
+    .attr("width", "200%")
+    .attr("height", "200%");
+
+  // Original blur for soft glow
+  filter.append("feGaussianBlur")
+    .attr("stdDeviation", 2)
+    .attr("result", "blur");
+
+  // Create a darker edge
+  filter.append("feMorphology")
+    .attr("operator", "dilate")
+    .attr("radius", 2)
+    .attr("in", "SourceGraphic")
+    .attr("result", "edge");
+
+  filter.append("feComponentTransfer")
+    .attr("in", "edge")
+    .attr("result", "darkEdge")
+    .append("feFuncR")
+    .attr("type", "linear")
+    .attr("slope", 0.6); // Darken red channel
+  filter.select("feComponentTransfer")
+    .append("feFuncG")
+    .attr("type", "linear")
+    .attr("slope", 0.6); // Darken green channel
+  filter.select("feComponentTransfer")
+    .append("feFuncB")
+    .attr("type", "linear")
+    .attr("slope", 0.6); // Darken blue channel
+
+  // Merge blur and dark edge
+  filter.append("feMerge")
+    .append("feMergeNode")
+    .attr("in", "blur");
+  filter.select("feMerge")
+    .append("feMergeNode")
+    .attr("in", "darkEdge");
+
+  // Load data
+  const data = await d3.json("data/final_data.json");
   data.forEach(d => d.Year = +d.Year);
 
   const indicators = [
     { key: "UnderFiveMortality", label: "Under-Five Mortality (per 1,000)" },
-    { key: "SecondaryEducation", label: "Secondary Education (%)" },
+    { key: "DrinkingWater", label: "Drinking Water Access (%)" },
     { key: "UnemploymentRate", label: "Unemployment Rate (%)" }
   ];
 
@@ -78,13 +119,12 @@ export async function renderChart4() {
     .attr("value", d => d.key)
     .text(d => d.label);
 
-  const chart = svg.append("g")
-    .attr("transform", `translate(${margin.left},${margin.top})`);
-
   const countries = [...new Set(data.map(d => d.Country))];
   const colorScale = d3.scaleOrdinal()
     .domain(countries)
     .range(d3.schemeCategory10.slice(0, countries.length));
+
+  let selectedCountry = null; // Track highlighted country
 
   function updateChart() {
     const selectedIndicator = indicatorSelect.property("value");
@@ -94,7 +134,9 @@ export async function renderChart4() {
       subtitleElement.textContent = `Indicator: ${selected.label}`;
     }
 
-    const groupedData = d3.groups(data, d => d.Country)
+    // Filter out invalid data points
+    const validData = data.filter(d => d[selectedIndicator] != null && !isNaN(d[selectedIndicator]));
+    const groupedData = d3.groups(validData, d => d.Country)
       .map(([country, values]) => ({
         country,
         values: values.sort((a, b) => a.Year - b.Year),
@@ -106,31 +148,42 @@ export async function renderChart4() {
       .domain(d3.extent(data, d => d.Year))
       .range([0, innerWidth]);
 
+    const maxValue = d3.max(validData, d => d[selectedIndicator]) || 1;
     const yScale = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d[selectedIndicator]) * 1.1 || 1])
-      .range([innerHeight, 0]);
+      .domain([0, maxValue * 1.1])
+      .range([innerHeight, 0])
+      .nice();
 
     const area = d3.area()
       .x(d => xScale(d.Year))
       .y0(innerHeight)
-      .y1(d => yScale(d[selectedIndicator] || 0));
+      .y1(d => yScale(d[selectedIndicator] || 0))
+      .defined(d => d[selectedIndicator] != null && !isNaN(d[selectedIndicator]));
 
+    // Clear previous chart elements
     chart.selectAll(".area").remove();
     chart.selectAll(".axis").remove();
     svg.selectAll(".title").remove();
     legendContainer.innerHTML = "";
 
+    // Draw area paths
     chart.selectAll(".area")
       .data(groupedData)
       .enter()
       .append("path")
       .attr("class", "area")
       .attr("d", d => area(d.values))
-      .attr("fill", d => colorScale(d.country))
+      .attr("fill", d => selectedCountry === d.country 
+        ? d3.color(colorScale(d.country)).darker(1)
+        : colorScale(d.country))
       .attr("opacity", 0.5)
-      .attr("stroke", d => d3.color(colorScale(d.country)).darker(1))
-      .attr("stroke-width", 1);
+      .attr("stroke", d => selectedCountry === d.country 
+        ? d3.color(colorScale(d.country)).darker(2) 
+        : d3.color(colorScale(d.country)).darker(1))
+      .attr("stroke-width", d => selectedCountry === d.country ? 5 : 1)
+      .style("filter", d => selectedCountry === d.country ? "url(#glow)" : null);
 
+    // X-axis
     const xAxis = chart.append("g")
       .attr("class", "axis")
       .attr("transform", `translate(0,${innerHeight})`)
@@ -146,6 +199,7 @@ export async function renderChart4() {
       .style("font-size", "18px")
       .text("Year");
 
+    // Y-axis
     const yAxis = chart.append("g")
       .attr("class", "axis")
       .call(d3.axisLeft(yScale));
@@ -160,27 +214,25 @@ export async function renderChart4() {
       .attr("text-anchor", "middle")
       .style("font-size", "18px")
       .text(indicators.find(i => i.key === selectedIndicator).label);
-      
+
+    // Legend
     const legendSvg = d3.select(legendContainer)
       .append("svg")
-      .attr("width", 250)
-      .attr("height", countries.length * 25 + 50); 
+      .attr("width", 300)
+      .attr("height", countries.length * 25 + 60);
 
-    // Add legend title separately
     legendSvg.append("text")
-    .attr("x", 10)
-    .attr("y", 20)
-    .attr("font-size", "18px")
-    .attr("font-weight", "bold")
-    .text("Country Legend");
+      .attr("x", 10)
+      .attr("y", 20)
+      .attr("font-size", "14px")
+      .attr("font-weight", "bold")
+      .text("Click to enhance the estimate for a country");
 
-    // Add legend items in a separate group, pushed further down
     const legend = legendSvg.append("g")
-    .attr("transform", `translate(10, 45)`);  // ← moved down from 30 to 45
+      .attr("transform", `translate(10, 50)`);
 
-
-    // Legend items
-    legend.selectAll("rect")
+    // Legend rectangles
+    const legendRects = legend.selectAll("rect")
       .data(countries)
       .enter()
       .append("rect")
@@ -188,9 +240,15 @@ export async function renderChart4() {
       .attr("y", (d, i) => i * 25)
       .attr("width", 15)
       .attr("height", 20)
-      .attr("fill", d => colorScale(d));
+      .attr("fill", d => colorScale(d))
+      .style("cursor", "pointer")
+      .on("click", function(event, d) {
+        selectedCountry = selectedCountry === d ? null : d;
+        updateHighlight();
+      });
 
-    legend.selectAll("text.label")
+    // Legend text
+    const legendText = legend.selectAll("text.label")
       .data(countries)
       .enter()
       .append("text")
@@ -198,7 +256,25 @@ export async function renderChart4() {
       .attr("x", 20)
       .attr("y", (d, i) => i * 25 + 15)
       .text(d => d)
-      .style("font-size", "16px");
+      .style("font-size", "16px")
+      .style("cursor", "pointer")
+      .on("click", function(event, d) {
+        selectedCountry = selectedCountry === d ? null : d;
+        updateHighlight();
+      });
+  }
+
+  function updateHighlight() {
+    chart.selectAll(".area")
+      .attr("opacity", 0.5)
+      .attr("fill", d => selectedCountry === d.country 
+        ? d3.color(colorScale(d.country)).darker(1)
+        : colorScale(d.country))
+      .attr("stroke", d => selectedCountry === d.country 
+        ? d3.color(colorScale(d.country)).darker(2) 
+        : d3.color(colorScale(d.country)).darker(1))
+      .attr("stroke-width", d => selectedCountry === d.country ? 5 : 1)
+      .style("filter", d => selectedCountry === d.country ? "url(#glow)" : null);
   }
 
   // Default selection and render

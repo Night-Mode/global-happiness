@@ -116,27 +116,27 @@ const descriptions = [
 `,
   `<h3>Trends in Sustainable Development Indicators</h3>
 <p>
-  This chart integrates the World Health Organization’s Sustainable Development Goals (SDG) dataset to explore demographic and economic indicators that may explain the happiness scores from Charts 1 and 2. 
-  It uses a stacked area chart to track under-five mortality rates, secondary education completion, and unemployment rates from 2015 to 2023.
+  This chart integrates the World Health Organization’s Sustainable Development Goals (SDG) dataset to explore demographic and economic indicators that may explain happiness scores from Charts 1 and 2. 
+  It uses an interactive area chart to track under-five mortality rates, access to drinking water in schools, and unemployment rates from 2015 to 2023.
 </p>
 <p>
-  Initially intended to cover both the happiest and least happy countries, the chart focuses on six top-performing nations—Finland, Iceland, Israel, Norway, Sweden, and Switzerland—due to their consistent data across all indicators. 
-  It's important to note, however, that these countries, mostly found in Europe, may introduce regional bias, as higher-income nations often report more thorough data.
+  The visualization covers six countries from the 2024 World Happiness Report: three of the happiest (e.g., Norway, Denmark, Finland) and three of the least happy (Afghanistan, Zimbabwe, Zambia), selected for their consistent data across all indicators. 
+  This mix provides a balanced view, though happier countries, often in Europe, may reflect more complete reporting, introducing potential regional bias.
 </p>
 <p>
-  The visualization reveals interesting trends. For instance, Norway and Switzerland maintain low unemployment rates (typically under 5%).
-  Interestingly, Sweden and Finland show slightly higher mortality rates, possibly due to differences in population structure or reporting practices.
+  The chart reveals notable trends. For instance, happier countries like Norway maintain near-universal access to drinking water (close to 100%) and low under-five mortality rates (under 5 per 1,000). 
+  In contrast, less happy countries like Afghanistan show lower water access (e.g., 60–80%) and higher mortality rates. 
+  Interactivity allows users to select indicators via a dropdown and highlight a country’s trend by clicking its name in the legend, enhancing clarity.
 </p>
-
-<p> Important definitions for indicators as mentioned in the SGD report:</p>
+<p>Important definitions for indicators as mentioned in the SDG report:</p>
 <ul>
   <li>Under-five mortality rate: Number of deaths per 1,000 live births for children under age five.</li>
-  <li>Secondary education rate: Percentage of youth completing secondary school in a given year.</li>
+  <li>Access to drinking water: Percentage of schools with access to improved drinking water sources in a given year.</li>
   <li>Unemployment rate: Share of the labor force not currently employed but actively seeking work.</li>
   <li>Labor force: Total of all people who are either employed or unemployed (and seeking work).</li>
 </ul>
 <p>
-  Building on the choropleth and stacked bar charts, this area chart illustrates how key well-being indicators evolve over time in countries with high data quality, offering insights into the factors supporting happiness.
+  Building on the choropleth and stacked bar charts, this area chart illustrates how key well-being indicators evolve over time, offering insights into factors influencing happiness across diverse nations.
 </p>`,
 `
 <h3>Regional Distributions of Well-Being Dimensions</h3>
