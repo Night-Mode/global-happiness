@@ -5,41 +5,44 @@ export async function renderChart6() {
   const legendContainer = document.getElementById("chart-legend");
   const controlsContainer = document.getElementById("chart-controls");
 
-  // Clear previous
   visualContainer.innerHTML = "";
   legendContainer.innerHTML = "";
   controlsContainer.innerHTML = "";
 
   const titleElement = document.getElementById("chart-title");
   if (titleElement) {
-    titleElement.textContent = "Regional Variation for Contributing Happiness Factors";
+    titleElement.textContent = "Regional Comparisons for Contributing Happiness Factors";
   }
 
-  // Load data
-  const data = await d3.csv("data/final_merged_regions.csv", d3.autoType);
+  const data = await d3.csv("data/merged_boxplot_data_cleaned.csv", d3.autoType);
 
-  const dimensions = [
-    "Tech",
-    "Education",
-    "Violence",
-    "Health",
-    "Inequality"
+  const happinessDimensions = [
+    "Ladder Score",
+    "Log GDP per capita",
+    "Social Support",
+    "Healthy Life Expectancy",
+    "Personal Freedom",
+    "Generosity",
+    "Perceptions of Corruption",
+    "Dystopia"
   ];
 
+  const additionalDimensions = ["Tech", "Education", "Violence", "Health", "Inequality"];
+
   const dimensionLabels = {
-    Tech: "Technology Access Level (IDI Score)",
-    Education: "Educational Attainment (Learning-adjusted Years of Schooling)",
-    Violence: "Violence Exposure Level - Annual Incidents of Violent Crime (Log Scale)",
-    Health: "Health System Security (GHSI Index)",
-    Inequality: "Income Inequality Gap (Gini Coefficient)"
-  };
-  
-  const dimensionDropdownLabels = {
-    Tech: "Technology Access",
-    Education: "Education Levels",
-    Violence: "Violence Exposure",
-    Health: "Healthcare Security",
-    Inequality: "Income Inequality Gap"
+    "Ladder Score": "Overall Happiness Ladder Score",
+    "Log GDP per capita": "GDP per Capita (Log Scale)",
+    "Social Support": "Social Support Index",
+    "Healthy Life Expectancy": "Healthy Life Expectancy (Years)",
+    "Personal Freedom": "Freedom to Make Life Choices",
+    "Generosity": "Perceived Generosity",
+    "Perceptions of Corruption": "Perceived Corruption Level",
+    "Dystopia": "Dystopia + Residual",
+    "Tech": "Technology Access Level (IDI Score)",
+    "Education": "Educational Attainment (Learning-adjusted Years of Schooling)",
+    "Violence": "Violence Exposure Level - Annual Incidents of Violent Crime (Log Scale)",
+    "Health": "Health System Security (GHSI Index)",
+    "Inequality": "Income Inequality Gap (Gini Coefficient)"
   };
 
   const regionGroups = {
@@ -47,116 +50,88 @@ export async function renderChart6() {
     "Southern Europe": "Europe",
     "Eastern Europe": "Europe",
     "Western Europe": "Europe",
-  
     "North Africa": "Africa",
     "Central Africa": "Africa",
     "West Africa": "Africa",
-    "Southern Africa": "Africa",  
-  
+    "Southern Africa": "Africa",
     "South Asia": "Asia",
     "Southeast Asia": "Asia",
     "East Asia": "Asia",
     "Central Asia": "Asia",
     "Middle East": "Asia",
-  
     "North America": "Americas",
     "Central America": "Americas",
     "South America": "Americas",
-  
     "Oceania": "Oceania"
   };
-  
-  // Create dropdown control
-  const label = document.createElement("label");
-  label.textContent = "Select Dimension: ";
-  label.setAttribute("for", "dimension-select");
 
-  const select = document.createElement("select");
-  select.id = "dimension-select";
-  dimensions.forEach(dim => {
-    const option = document.createElement("option");
-    option.value = dim;
-    option.textContent = dimensionDropdownLabels[dim];
+  function createDropdown(id, labelText, options, container) {
+    const wrapper = document.createElement("div");
+    wrapper.style.marginBottom = "1rem";
 
-    select.appendChild(option);
-  });
+    const label = document.createElement("label");
+    label.textContent = labelText;
+    label.setAttribute("for", id);
+    label.style.display = "block";
 
-  controlsContainer.appendChild(label);
-  controlsContainer.appendChild(select);
+    const select = document.createElement("select");
+    select.id = id;
+    select.style.width = "100%";
 
-  // Initial render
-  let selectedDimension = select.value;
-  renderBoxplot(selectedDimension);
+    options.forEach(dim => {
+      const option = document.createElement("option");
+      option.value = dim;
+      option.textContent = dimensionLabels[dim] || dim;
+      select.appendChild(option);
+    });
 
-  // Event listener
-  select.addEventListener("change", () => {
-    selectedDimension = select.value;
-    renderBoxplot(selectedDimension);
-  });
+    wrapper.appendChild(label);
+    wrapper.appendChild(select);
+    container.appendChild(wrapper);
 
-  function renderBoxplot(selectedDimension) {
+    return select;
+  }
+
+  const selectHappiness = createDropdown("happiness-select", "Select Happiness Dimension: ", happinessDimensions, controlsContainer);
+  const selectAdditional = createDropdown("additional-select", "Select Additional Dimension: ", additionalDimensions, controlsContainer);
+
+  function updateChart() {
+    const dim1 = selectHappiness.value;
+    const dim2 = selectAdditional.value;
+    renderBoxplot(dim1, dim2);
+  }
+
+  selectHappiness.addEventListener("change", updateChart);
+  selectAdditional.addEventListener("change", updateChart);
+
+  updateChart();
+
+  function renderBoxplot(dim1, dim2) {
     visualContainer.innerHTML = "";
-    
+
     const rect = visualContainer.getBoundingClientRect();
-    
     const margin = { top: 60, right: 80, bottom: 100, left: 80 };
     const width = rect.width - margin.left - margin.right;
     const height = rect.height - margin.top - margin.bottom;
 
-    const svg = d3
-      .select(visualContainer)
+    const svg = d3.select(visualContainer)
       .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom);
 
-    // Add dynamic subtitle
-    svg.append("text")
-    .attr("x", (width + margin.left + margin.right) / 2)
-    .attr("y", 30)
-    .attr("text-anchor", "middle")
-    .style("font-size", "18px")
-    .style("fill", "#555")
-    .text(dimensionLabels[selectedDimension]);
+    svg.append("defs").append("clipPath")
+      .attr("id", "clip-box")
+      .append("rect")
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("width", width)
+      .attr("height", height);
 
-    const g = svg
-      .append("g")
+    const g = svg.append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Group by region
-    const grouped = d3.groups(data, d => d.subregion).map(([subregion, entries]) => {
-      const valid = entries.filter(d => {
-        const val = d[selectedDimension];
-        return val != null && !isNaN(val);
-      });
-
-      const values = valid.map(d => d[selectedDimension]).sort(d3.ascending);
-
-      const q1 = d3.quantile(values, 0.25);
-      const q3 = d3.quantile(values, 0.75);
-      const iqr = q3 - q1;
-      const lowerFence = q1 - 1.5 * iqr;
-      const upperFence = q3 + 1.5 * iqr;
-
-      const nonOutliers = valid.filter(d => {
-        const val = d[selectedDimension];
-        return val >= lowerFence && val <= upperFence;
-      });
-
-      const outliers = valid.filter(d => {
-        const val = d[selectedDimension];
-        return val < lowerFence || val > upperFence;
-      });
-
-      return {
-        subregion,
-        q1,
-        q3,
-        median: d3.quantile(values, 0.5),
-        min: d3.min(nonOutliers, d => d[selectedDimension]),
-        max: d3.max(nonOutliers, d => d[selectedDimension]),
-        outliers
-      };
-    });
+    const plotArea = g.append("g")
+      .attr("clip-path", "url(#clip-box)");
 
     const subregionsSorted = Object.entries(regionGroups)
       .sort((a, b) => d3.ascending(a[1], b[1]) || d3.ascending(a[0], b[0]))
@@ -165,107 +140,113 @@ export async function renderChart6() {
     const x = d3.scaleBand()
       .domain(subregionsSorted)
       .range([0, width])
-      .padding(0.3);
+      .padding(0.2);
 
-    const isLogScale = selectedDimension === "Violence";
+    const boxWidth = x.bandwidth() / 2.2;
 
-    const y = isLogScale
-      ? d3.scaleLog()
-          .domain([
-            Math.max(1, d3.min(grouped, d => Math.min(d.min, ...d.outliers.map(o => o[selectedDimension])))),
-            d3.max(grouped, d => Math.max(d.max, ...d.outliers.map(o => o[selectedDimension])))
-          ])
-          .range([height, 0])
-          .nice()
-      : d3.scaleLinear()
-          .domain([
-            d3.min(grouped, d => Math.min(d.min, ...d.outliers.map(o => o[selectedDimension]))),
-            d3.max(grouped, d => Math.max(d.max, ...d.outliers.map(o => o[selectedDimension])))
-          ])
-          .range([height, 0])
-          .nice();
+    function calculateStats(entries, key) {
+      const values = entries.map(d => d[key]).filter(v => v != null && !isNaN(v)).sort(d3.ascending);
+      if (values.length === 0) return null;
 
-    // Axes
-    g.append("g")
-    .attr("transform", `translate(0,${height})`)
-    .call(d3.axisBottom(x))
-    .selectAll("text")
-    .attr("transform", "rotate(-40)")
-    .style("text-anchor", "end")
-    .style("font-size", "16px");
-  
+      const q1 = d3.quantile(values, 0.25);
+      const q3 = d3.quantile(values, 0.75);
+      const iqr = q3 - q1;
+      const lowerFence = q1 - 1.5 * iqr;
+      const upperFence = q3 + 1.5 * iqr;
 
-    g.append("g").call(d3.axisLeft(y))
-    .selectAll("text")
-    .style("font-size", "14px");
+      const filtered = values.filter(v => v >= lowerFence && v <= upperFence);
 
-    // Tooltip
-    const tooltip = d3.select(".tooltip");
+      return {
+        q1,
+        q3,
+        median: d3.quantile(filtered, 0.5),
+        min: d3.min(filtered),
+        max: d3.max(filtered),
+        values: filtered,
+        lowerFence,
+        upperFence
+      };
+    }
 
-    // Boxplot drawing
-    grouped.forEach(d => {
-      const boxWidth = x.bandwidth();
-      const cx = x(d.subregion) + boxWidth / 2;
+    const allStats1 = [];
+    const allStats2 = [];
 
-      // Box
-      g.append("rect")
-        .attr("x", x(d.subregion))
-        .attr("y", y(d.q3))
-        .attr("height", y(d.q1) - y(d.q3))
-        .attr("width", boxWidth)
-        .attr("stroke", "black")
-        .attr("fill", "#b2d8d8");
-
-      // Median
-      g.append("line")
-        .attr("x1", x(d.subregion))
-        .attr("x2", x(d.subregion) + boxWidth)
-        .attr("y1", y(d.median))
-        .attr("y2", y(d.median))
-        .attr("stroke", "black");
-
-      // Whiskers
-      g.append("line").attr("x1", cx).attr("x2", cx).attr("y1", y(d.min)).attr("y2", y(d.q1)).attr("stroke", "black");
-      g.append("line").attr("x1", cx).attr("x2", cx).attr("y1", y(d.q3)).attr("y2", y(d.max)).attr("stroke", "black");
-
-      // Caps
-      g.append("line")
-        .attr("x1", cx - boxWidth * 0.25)
-        .attr("x2", cx + boxWidth * 0.25)
-        .attr("y1", y(d.min))
-        .attr("y2", y(d.min))
-        .attr("stroke", "black");
-
-      g.append("line")
-        .attr("x1", cx - boxWidth * 0.25)
-        .attr("x2", cx + boxWidth * 0.25)
-        .attr("y1", y(d.max))
-        .attr("y2", y(d.max))
-        .attr("stroke", "black");
-
-      // Outliers
-      g.selectAll(`.outlier-${d.subregion}`)
-        .data(d.outliers)
-        .enter()
-        .append("circle")
-        .attr("cx", cx)
-        .attr("cy", o => y(o[selectedDimension]))
-        .attr("r", 4)
-        .attr("fill", "red")
-        .attr("opacity", 0.7)
-        .on("mouseover", function (event, o) {
-          tooltip
-            .style("display", "block")
-            .html(`${o.Country_Name}: ${o[selectedDimension]}`)
-            .style("left", `${event.pageX + 10}px`)
-            .style("top", `${event.pageY - 20}px`);
-        })
-        .on("mousemove", function (event) {
-          tooltip.style("left", `${event.pageX + 10}px`).style("top", `${event.pageY - 20}px`);
-        })
-        .on("mouseout", function () {
-          tooltip.style("display", "none");
-        });
+    subregionsSorted.forEach(subregion => {
+      const entries = data.filter(d => d.subregion === subregion && d[dim1] != null && d[dim2] != null);
+      const stats1 = calculateStats(entries, dim1);
+      const stats2 = calculateStats(entries, dim2);
+      if (stats1 && stats2) {
+        allStats1.push(...stats1.values);
+        allStats2.push(...stats2.values);
+      }
     });
+
+    const yLeft = d3.scaleLinear().domain(d3.extent(allStats1)).nice().range([height, 0]);
+    const yRight = d3.scaleLinear().domain(d3.extent(allStats2)).nice().range([height, 0]);
+
+    g.append("g")
+      .attr("transform", `translate(0,${height})`)
+      .call(d3.axisBottom(x))
+      .selectAll("text")
+      .attr("transform", "rotate(-40)")
+      .style("text-anchor", "end")
+      .style("font-size", "16px");
+
+    g.append("g")
+      .call(d3.axisLeft(yLeft))
+      .selectAll("text")
+      .style("font-size", "16px");
+
+    g.append("g")
+      .attr("transform", `translate(${width}, 0)`)
+      .call(d3.axisRight(yRight))
+      .selectAll("text")
+      .style("font-size", "16px");
+
+    subregionsSorted.forEach(subregion => {
+      const entries = data.filter(d => d.subregion === subregion && d[dim1] != null && d[dim2] != null);
+      const stats1 = calculateStats(entries, dim1);
+      const stats2 = calculateStats(entries, dim2);
+      if (!stats1 || !stats2) return;
+      const cx = x(subregion);
+
+      plotArea.append("rect")
+        .attr("x", cx)
+        .attr("y", yLeft(stats1.q3))
+        .attr("width", boxWidth)
+        .attr("height", yLeft(stats1.q1) - yLeft(stats1.q3))
+        .attr("fill", "#66c2a5")
+        .attr("stroke", "black");
+
+      plotArea.append("line")
+        .attr("x1", cx)
+        .attr("x2", cx + boxWidth)
+        .attr("y1", yLeft(stats1.median))
+        .attr("y2", yLeft(stats1.median))
+        .attr("stroke", "black");
+
+      plotArea.append("rect")
+        .attr("x", cx + boxWidth)
+        .attr("y", yRight(stats2.q3))
+        .attr("width", boxWidth)
+        .attr("height", yRight(stats2.q1) - yRight(stats2.q3))
+        .attr("fill", "#fc8d62")
+        .attr("stroke", "black");
+
+      plotArea.append("line")
+        .attr("x1", cx + boxWidth)
+        .attr("x2", cx + boxWidth * 2)
+        .attr("y1", yRight(stats2.median))
+        .attr("y2", yRight(stats2.median))
+        .attr("stroke", "black");
+    });
+
+    svg.append("text")
+      .attr("x", (width + margin.left + margin.right) / 2)
+      .attr("y", 30)
+      .attr("text-anchor", "middle")
+      .style("font-size", "18px")
+      .style("fill", "#555")
+      .text(`${dimensionLabels[dim1]} (🟩 Left Y) vs ${dimensionLabels[dim2]} (🟧 Right Y)`);
   }
 }

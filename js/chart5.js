@@ -134,13 +134,16 @@ export async function renderChart5() {
     });
   }
 
-  // Initial draw
-  const defaultCountries = getRandomCountries(allCountries);
-  defaultCountries.forEach(country => {
-    [...select.options].forEach(opt => {
-      if (opt.value === country) opt.selected = true;
-    });
-  });
+  // Initial draw - Top 3 and Bottom 3 by Happiness
+  const defaultCountries = [
+    "Norway",
+    "Denmark",
+    "Sweden",
+    "Zimbabwe",
+    "Botswana",
+    "Lesotho"
+  ];
+
   renderRadarCharts(defaultCountries);
 
   // Redraw when selection changes
