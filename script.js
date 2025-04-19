@@ -9,7 +9,7 @@ import { renderChart6 } from "./js/chart6.js";
 const descriptions = [
   `<h3>Global Happiness Scores Overview</h3>
 <p>
-  The first plot in this series presents “Happiness Scores” from the 2024 World Happiness Report, based on data collected between 2021 and 2023. 
+  The first plot in this series presents “Happiness Scores” from the 2024 World Happiness Report, based on data collected between 2005/06 - 2023. 
   These scores, also known as ladder scores, originate from the Gallup World Poll, which includes survey questions related to individual life evaluations.
 </p>
 <p>
@@ -26,7 +26,7 @@ const descriptions = [
 <ul>
   <li>Happiness inequality persists in all continents except Europe.</li>
   <li>Social interaction is a key predictor of happiness.</li>
-  <li>Females report a higher prevalence of negative emotions across all regions.</li>
+  <li>Females report a higher prevalence of negative emotions across all regions (World Happiness Report).</li>
 </ul>
 <p>
   Overall, this introductory chart offers a broad overview of global happiness levels, serving as a meaningful entry point into the deeper analyses that follow.
@@ -120,7 +120,7 @@ const descriptions = [
   It uses an interactive area chart to track under-five mortality rates, access to drinking water in schools, and unemployment rates from 2015 to 2023.
 </p>
 <p>
-  The visualization covers six countries from the 2024 World Happiness Report: three of the happiest (e.g., Norway, Denmark, Finland) and three of the least happy (Afghanistan, Zimbabwe, Zambia), selected for their consistent data across all indicators. 
+  The visualization covers six countries from the 2024 World Happiness Report: three of the happiest (e.g., Norway, Denmark, Australia) and three of the least happy (Afghanistan, Zimbabwe, Zambia), selected for their consistent data across all indicators. 
   This mix provides a balanced view, though happier countries, often in Europe, may reflect more complete reporting, introducing potential regional bias.
 </p>
 <p>

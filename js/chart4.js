@@ -1,3 +1,5 @@
+// Start AI
+
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 export async function renderChart4() {
@@ -6,30 +8,25 @@ export async function renderChart4() {
   const controlsContainer = document.getElementById("chart-controls");
   const legendContainer = document.getElementById("chart-legend");
 
-  // Create or select subtitle element
-  let subtitleElement = document.getElementById("chart-subtitle");
-  if (!subtitleElement) {
-    subtitleElement = document.createElement("div");
-    subtitleElement.id = "chart-subtitle";
-    subtitleElement.style.fontSize = "18px";
-    subtitleElement.style.fontWeight = "normal";
-    subtitleElement.style.marginTop = "10px";
-    subtitleElement.style.marginBottom = "10px";
-    subtitleElement.style.textAlign = "center";
-    document.getElementById("chart-title").after(subtitleElement);
-  }
-
   // Clear previous content
   visualContainer.innerHTML = "";
   controlsContainer.innerHTML = "";
   legendContainer.innerHTML = "";
 
+  // Set title
   const titleElement = document.getElementById("chart-title");
-  if (titleElement) {
-    titleElement.textContent = "SDG Indicators Across Top 6 Data-Rich Countries";
+  if (titleElement) titleElement.textContent = "SDG Indicators Across Top 6 Data-Rich Countries";
+
+  // Create or update subtitle
+  let subtitleElement = document.getElementById("chart-subtitle");
+  if (!subtitleElement) {
+    subtitleElement = document.createElement("div");
+    subtitleElement.id = "chart-subtitle";
+    subtitleElement.style.cssText = "font-size:18px;font-weight:normal;margin:10px 0;text-align:center";
+    document.getElementById("chart-title").after(subtitleElement);
   }
 
-  // Chart title + dropdown into controls section
+  // Create dropdown
   controlsContainer.innerHTML = `
     <div style="text-align: left; margin-bottom: 10px;">
       <label for="indicator-select">Indicator:</label>
@@ -37,104 +34,86 @@ export async function renderChart4() {
     </div>
   `;
 
-  // Append SVG to chart visual
-  const rect = visualContainer.getBoundingClientRect();
+  // End AI
 
+  // Create SVG as done in the other charts and similar to our class:
+  const rect = visualContainer.getBoundingClientRect();
   const margin = { top: 40, right: 80, bottom: 60, left: 80 };
   const width = rect.width - margin.left - margin.right;
   const height = rect.height - margin.top - margin.bottom;
-  const innerWidth = width;
-  const innerHeight = height;
-
-  const svg = d3.select(visualContainer)
-    .append("svg")
-    .attr("id", "map")
+  // Creating SVG element:
+  const svg = d3.create("svg")
     .attr("width", rect.width)
-    .attr("height", rect.height);
+    .attr("height", rect.height)
+    .attr("viewBox", [0, 0, rect.width, rect.height])
+    .attr("style", "max-width: 100%; height: auto;");
+  visualContainer.appendChild(svg.node());
 
+  // Creating group element:
   const chart = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
-  // Define glow filter with darker border
-  const defs = svg.append("defs");
-  const filter = defs.append("filter")
+  // Define glow filter (AI help). This allows the user to highlight a country and see its evolution over time:
+  svg.append("defs").append("filter")
     .attr("id", "glow")
     .attr("x", "-50%")
     .attr("y", "-50%")
     .attr("width", "200%")
-    .attr("height", "200%");
+    .attr("height", "200%")
+    .call(f => f.append("feGaussianBlur").attr("stdDeviation", 2).attr("result", "blur"))
+    .call(f => f.append("feMorphology")
+      .attr("operator", "dilate")
+      .attr("radius", 2)
+      .attr("in", "SourceGraphic")
+      .attr("result", "edge"))
+    .call(f => f.append("feComponentTransfer")
+      .attr("in", "edge")
+      .attr("result", "darkEdge")
+      .call(g => g.append("feFuncR").attr("type", "linear").attr("slope", 0.6))
+      .call(g => g.append("feFuncG").attr("type", "linear").attr("slope", 0.6))
+      .call(g => g.append("feFuncB").attr("type", "linear").attr("slope", 0.6)))
+    .call(f => f.append("feMerge")
+      .call(g => g.append("feMergeNode").attr("in", "blur"))
+      .call(g => g.append("feMergeNode").attr("in", "darkEdge")));
 
-  // Original blur for soft glow
-  filter.append("feGaussianBlur")
-    .attr("stdDeviation", 2)
-    .attr("result", "blur");
+  // End AI
 
-  // Create a darker edge
-  filter.append("feMorphology")
-    .attr("operator", "dilate")
-    .attr("radius", 2)
-    .attr("in", "SourceGraphic")
-    .attr("result", "edge");
-
-  filter.append("feComponentTransfer")
-    .attr("in", "edge")
-    .attr("result", "darkEdge")
-    .append("feFuncR")
-    .attr("type", "linear")
-    .attr("slope", 0.6); // Darken red channel
-  filter.select("feComponentTransfer")
-    .append("feFuncG")
-    .attr("type", "linear")
-    .attr("slope", 0.6); // Darken green channel
-  filter.select("feComponentTransfer")
-    .append("feFuncB")
-    .attr("type", "linear")
-    .attr("slope", 0.6); // Darken blue channel
-
-  // Merge blur and dark edge
-  filter.append("feMerge")
-    .append("feMergeNode")
-    .attr("in", "blur");
-  filter.select("feMerge")
-    .append("feMergeNode")
-    .attr("in", "darkEdge");
-
-  // Load data
+  // Load the data:
   const data = await d3.json("data/final_data.json");
   data.forEach(d => d.Year = +d.Year);
 
+  // Defining the indicators:
   const indicators = [
+    { key: "UnemploymentRate", label: "Unemployment Rate (%)" },
     { key: "UnderFiveMortality", label: "Under-Five Mortality (per 1,000)" },
-    { key: "DrinkingWater", label: "Drinking Water Access (%)" },
-    { key: "UnemploymentRate", label: "Unemployment Rate (%)" }
+    { key: "DrinkingWater", label: "Drinking Water Access (%)" }
   ];
 
-  // Populate dropdown
-  const indicatorSelect = d3.select("#indicator-select");
-  indicatorSelect
+  // Populating the dropdown:
+  d3.select("#indicator-select")
     .selectAll("option")
     .data(indicators)
-    .enter()
-    .append("option")
+    .join("option")
     .attr("value", d => d.key)
     .text(d => d.label);
 
+  // Beginning chart and coloring functionality as referenced by: https://observablehq.com/@d3/stacked-area-chart/2
   const countries = [...new Set(data.map(d => d.Country))];
+
+  // Applying similar color scale as reference: 
   const colorScale = d3.scaleOrdinal()
     .domain(countries)
     .range(d3.schemeCategory10.slice(0, countries.length));
 
-  let selectedCountry = null; // Track highlighted country
+  let selectedCountry = null;
 
+  // Some AI help to get the updating to work properly:
   function updateChart() {
-    const selectedIndicator = indicatorSelect.property("value");
-
+    const selectedIndicator = d3.select("#indicator-select").property("value");
     const selected = indicators.find(i => i.key === selectedIndicator);
-    if (subtitleElement && selected) {
-      subtitleElement.textContent = `Indicator: ${selected.label}`;
-    }
+    subtitleElement.textContent = `Indicator: ${selected.label}`;
 
-    // Filter out invalid data points
+    // Processing the data based on what the selected indicator is: 
     const validData = data.filter(d => d[selectedIndicator] != null && !isNaN(d[selectedIndicator]));
     const groupedData = d3.groups(validData, d => d.Country)
       .map(([country, values]) => ({
@@ -144,29 +123,32 @@ export async function renderChart4() {
       }))
       .sort((a, b) => b.maxValue - a.maxValue);
 
+  // End AI
+
+    // Defining the scales:
     const xScale = d3.scaleLinear()
       .domain(d3.extent(data, d => d.Year))
-      .range([0, innerWidth]);
+      .range([0, width]);
 
     const maxValue = d3.max(validData, d => d[selectedIndicator]) || 1;
     const yScale = d3.scaleLinear()
-      .domain([0, maxValue * 1.1])
-      .range([innerHeight, 0])
+      .domain([0, maxValue])
+      .range([height, 0])
+      // Reference: https://www.d3indepth.com/scales/
       .nice();
 
+    // Using d3.area() as done in the reference:
     const area = d3.area()
       .x(d => xScale(d.Year))
-      .y0(innerHeight)
+      .y0(height)
       .y1(d => yScale(d[selectedIndicator] || 0))
       .defined(d => d[selectedIndicator] != null && !isNaN(d[selectedIndicator]));
 
-    // Clear previous chart elements
-    chart.selectAll(".area").remove();
-    chart.selectAll(".axis").remove();
-    svg.selectAll(".title").remove();
+    // Clear previous elements
+    chart.selectAll(".area, .axis").remove();
     legendContainer.innerHTML = "";
 
-    // Draw area paths
+    // Draw areas with some AI help to get the filling and stroke colors to work based on the country the user selects:
     chart.selectAll(".area")
       .data(groupedData)
       .enter()
@@ -178,107 +160,113 @@ export async function renderChart4() {
         : colorScale(d.country))
       .attr("opacity", 0.5)
       .attr("stroke", d => selectedCountry === d.country 
-        ? d3.color(colorScale(d.country)).darker(2) 
+        ? d3.color(colorScale(d.country)).darker(2)
         : d3.color(colorScale(d.country)).darker(1))
       .attr("stroke-width", d => selectedCountry === d.country ? 5 : 1)
-      .style("filter", d => selectedCountry === d.country ? "url(#glow)" : null);
+      .style("filter", d => selectedCountry === d.country ? "url(#glow)" : null)
+      .on("click", (event, d) => {
+        selectedCountry = selectedCountry === d.country ? null : d.country;
+        updateHighlight();
+      });
+
+      // End AI
+
+    // The axes are inspired by the reference mentioned, but are a bit more complicated due to the dynamics and styling that 
+    // is necessary. The code uses similar functions like tick size outer, call, text anchor, font size, etc.:
 
     // X-axis
-    const xAxis = chart.append("g")
+    chart.append("g")
       .attr("class", "axis")
-      .attr("transform", `translate(0,${innerHeight})`)
-      .call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
-    
-    xAxis.selectAll("text").style("font-size", "14px");
-    
-    xAxis.append("text")
-      .attr("fill", "black")
-      .attr("x", innerWidth / 2)
-      .attr("y", 50)
-      .attr("text-anchor", "middle")
-      .style("font-size", "18px")
-      .text("Year");
+      .attr("transform", `translate(0,${height})`)
+      .call(d3.axisBottom(xScale).tickFormat(d3.format("d")).tickSizeOuter(0))
+      .call(g => g.select(".domain").remove())
+      .call(g => g.append("text")
+        .attr("fill", "black")
+        .attr("x", width / 2)
+        .attr("y", 50)
+        .attr("text-anchor", "middle")
+        .style("font-size", "18px")
+        .text("Year"))
+      .call(g => g.selectAll("text").style("font-size", "14px"));
 
     // Y-axis
-    const yAxis = chart.append("g")
+    chart.append("g")
       .attr("class", "axis")
-      .call(d3.axisLeft(yScale));
-    
-    yAxis.selectAll("text").style("font-size", "14px");
-    
-    yAxis.append("text")
-      .attr("fill", "black")
-      .attr("transform", "rotate(-90)")
-      .attr("y", -50)
-      .attr("x", -innerHeight / 2)
-      .attr("text-anchor", "middle")
-      .style("font-size", "18px")
-      .text(indicators.find(i => i.key === selectedIndicator).label);
+      .call(d3.axisLeft(yScale))
+      .call(g => g.select(".domain").remove())
+      .call(g => g.append("text")
+        .attr("fill", "black")
+        .attr("transform", "rotate(-90)")
+        .attr("y", -50)
+        .attr("x", -height / 2)
+        .attr("text-anchor", "middle")
+        .style("font-size", "18px")
+        .text(selected.label))
+      .call(g => g.selectAll("text").style("font-size", "14px"));
 
-    // Legend
-    const legendSvg = d3.select(legendContainer)
-      .append("svg")
-      .attr("width", 300)
-      .attr("height", countries.length * 25 + 60);
-
-    legendSvg.append("text")
-      .attr("x", 10)
-      .attr("y", 20)
-      .attr("font-size", "14px")
-      .attr("font-weight", "bold")
-      .text("Click to enhance the estimate for a country");
-
+// The legend is also a little tricky because it needs to highlight the selected country in the chart based on what is clicked.
+// I referenced this resource that does something sort of similar: https://d3-graph-gallery.com/graph/stackedarea_template.html
+    const legendSvg = d3.create("svg")
+    .attr("width", 300)
+    .attr("height", countries.length * 25 + 30);
+    legendContainer.appendChild(legendSvg.node());
     const legend = legendSvg.append("g")
-      .attr("transform", `translate(10, 50)`);
-
-    // Legend rectangles
-    const legendRects = legend.selectAll("rect")
-      .data(countries)
-      .enter()
-      .append("rect")
-      .attr("x", 0)
-      .attr("y", (d, i) => i * 25)
-      .attr("width", 15)
-      .attr("height", 20)
-      .attr("fill", d => colorScale(d))
-      .style("cursor", "pointer")
-      .on("click", function(event, d) {
+    .attr("transform", "translate(10,20)");
+    legend.append("text")
+    .attr("y", -5)
+    .attr("font-size", "14px")
+    .attr("font-weight", "bold")
+    .text("Click to highlight country");
+    const size = 20;
+    legend.selectAll("rect")
+    .data(countries)
+    .enter()
+    .append("rect")
+    .attr("x", 0)
+    .attr("y", (d, i) => i * (size + 5))
+    .attr("width", size)
+    .attr("height", size)
+    .attr("fill", d => colorScale(d))
+    .style("cursor", "pointer")
+    .on("click", (event, d) => {
         selectedCountry = selectedCountry === d ? null : d;
         updateHighlight();
-      });
-
-    // Legend text
-    const legendText = legend.selectAll("text.label")
-      .data(countries)
-      .enter()
-      .append("text")
-      .attr("class", "label")
-      .attr("x", 20)
-      .attr("y", (d, i) => i * 25 + 15)
-      .text(d => d)
-      .style("font-size", "16px")
-      .style("cursor", "pointer")
-      .on("click", function(event, d) {
+    });
+    legend.selectAll("text.label")
+    .data(countries)
+    .enter()
+    .append("text")
+    .attr("class", "label")
+    .attr("x", size * 1.2)
+    .attr("y", (d, i) => i * (size + 5) + size / 2)
+    .attr("font-size", "14px")
+    .attr("text-anchor", "left")
+    .style("alignment-baseline", "middle")
+    .style("cursor", "pointer")
+    .text(d => d)
+    .on("click", (event, d) => {
         selectedCountry = selectedCountry === d ? null : d;
         updateHighlight();
-      });
-  }
+    });
+    }
+// Start AI:
+function updateHighlight() {
+  chart.selectAll(".area")
+    .attr("fill", d => selectedCountry === d.country 
+      ? d3.color(colorScale(d.country)).darker(1)
+      : colorScale(d.country))
+    .attr("opacity", 0.5)
+    .attr("stroke", d => selectedCountry === d.country 
+      ? d3.color(colorScale(d.country)).darker(2)
+      : d3.color(colorScale(d.country)).darker(1))
+    .attr("stroke-width", d => selectedCountry === d.country ? 5 : 1)
+    .style("filter", d => selectedCountry === d.country ? "url(#glow)" : null);
+}
 
-  function updateHighlight() {
-    chart.selectAll(".area")
-      .attr("opacity", 0.5)
-      .attr("fill", d => selectedCountry === d.country 
-        ? d3.color(colorScale(d.country)).darker(1)
-        : colorScale(d.country))
-      .attr("stroke", d => selectedCountry === d.country 
-        ? d3.color(colorScale(d.country)).darker(2) 
-        : d3.color(colorScale(d.country)).darker(1))
-      .attr("stroke-width", d => selectedCountry === d.country ? 5 : 1)
-      .style("filter", d => selectedCountry === d.country ? "url(#glow)" : null);
-  }
+// End AI
 
-  // Default selection and render
-  indicatorSelect.property("value", "UnderFiveMortality");
+  // Initially rendering with unemployment rate:
+  d3.select("#indicator-select").property("value", "UnemploymentRate");
   updateChart();
-  indicatorSelect.on("change", updateChart);
+  d3.select("#indicator-select").on("change", updateChart);
 }
