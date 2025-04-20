@@ -5,7 +5,7 @@
 - Lauryn Davis — email
 - Michael Minzey — minzey.michael@gmail.com
 
-Created for the final project in _CIS 671: Data Visualization_  
+Created for the final project in _CIS 671: Data Visualization_
 Grand Valley State University, Winter 2025
 
 This project presents an interactive data visualization dashboard exploring the statistical drivers of happiness around the world. Using data from the 2024 World Happiness Report and several external global datasets, this site enables users to explore how social, economic, health, and security factors relate to national well-being.
