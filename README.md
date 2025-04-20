@@ -2,8 +2,8 @@
 
 ## Team
 
-- Lauryn Davis — email
-- Michael Minzey — minzey.michael@gmail.com
+- Lauryn Davis — [davisl5@mail.gvsu.edu](mailto:davisl5@mail.gvsu.edu)
+- Michael Minzey — [minzey.michael@gmail.com](mailto:minzey.michael@gmail.com)
 
 Created for the final project in _CIS 671: Data Visualization_
 Grand Valley State University, Winter 2025

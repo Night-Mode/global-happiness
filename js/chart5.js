@@ -43,11 +43,6 @@ export async function renderChart5() {
     select.appendChild(option);
   });
 
-  // Utility function to randomly select n countries from a list
-  function getRandomCountries(arr, n = 6) {
-    const shuffled = [...arr].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, n);
-  }
 
   // Core function to render radar charts for selected countries
   function renderRadarCharts(selectedCountries) {
@@ -163,11 +158,15 @@ export async function renderChart5() {
 
   renderRadarCharts(defaultCountries);
 
+  // AI Help
+
   // Re-render chart on user selection (up to 6 countries)
   select.addEventListener("change", () => {
     const selected = Array.from(select.selectedOptions).map(opt => opt.value).slice(0, 6);
     renderRadarCharts(selected);
   });
+
+  // End AI Help
 
   // Create legend for interpreting color bins based on Happiness Score
   const legendSvg = d3.select("#chart-legend")

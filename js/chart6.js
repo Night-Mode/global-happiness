@@ -169,6 +169,8 @@ export async function renderChart6() {
     // Width of each boxplot
     const boxWidth = x.bandwidth() / 2.2;
 
+    // Begin AI Help
+
     // Calculate quartiles, whiskers, and filter outliers
     function calculateStats(entries, key) {
       const values = entries.map(d => d[key]).filter(v => v != null && !isNaN(v)).sort(d3.ascending);
@@ -207,6 +209,8 @@ export async function renderChart6() {
         allStats2.push(...stats2.values);
       }
     });
+
+    // End AI Help
 
     // Y-axis scales (independent per dimension)
     const yLeft = d3.scaleLinear().domain(d3.extent(allStats1)).nice().range([height, 0]);
