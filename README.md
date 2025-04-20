@@ -5,6 +5,8 @@
 - Lauryn Davis — [davisl5@mail.gvsu.edu](mailto:davisl5@mail.gvsu.edu)
 - Michael Minzey — [minzey.michael@gmail.com](mailto:minzey.michael@gmail.com)
 
+The project homepage can be found here: [https://night-mode.github.io/global-happiness/](https://night-mode.github.io/global-happiness/)
+
 Created for the final project in _CIS 671: Data Visualization_
 Grand Valley State University, Winter 2025
 
