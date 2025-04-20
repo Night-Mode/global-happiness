@@ -72,7 +72,7 @@ GLOBAL-HAPPINESS/
 ├── index.html # Main page with tab navigation and layout
 ├── README.md # Project overview and setup instructions
 ├── script.js # Handles tab switching and chart module loading
-└── styles.css # Styles for layout, fonts, and visual elements
+└── styles.css # Styles for layout, fonts, and visual elements.
 
 ## How to Use
 
