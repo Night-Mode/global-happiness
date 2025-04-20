@@ -9,7 +9,8 @@ import { renderChart6 } from "./js/chart6.js";
 const descriptions = [
   `<h3>Global Happiness Scores Overview</h3>
 <p>
-  The first plot in this series presents “Happiness Scores” from the 2024 World Happiness Report, based on data collected between 2005/06 - 2023. 
+  The first plot in this series presents “Happiness Scores” from the 2024 World Happiness Report, based on data collected between 2005/06 - 2023. The
+  ladder score specifically referenced in this report is an average over the years 2021 - 2023. 
   These scores, also known as ladder scores, originate from the Gallup World Poll, which includes survey questions related to individual life evaluations.
 </p>
 <p>
@@ -117,7 +118,7 @@ const descriptions = [
   `<h3>Trends in Sustainable Development Indicators</h3>
 <p>
   This chart integrates the World Health Organization’s Sustainable Development Goals (SDG) dataset to explore demographic and economic indicators that may explain happiness scores from Charts 1 and 2. 
-  It uses an interactive area chart to track under-five mortality rates, access to drinking water in schools, and unemployment rates from 2015 to 2023.
+  It uses an interactive area chart to track under-five mortality rates, access to drinking water in schools, and unemployment rates from 2015 to 2022.
 </p>
 <p>
   The visualization covers six countries from the 2024 World Happiness Report: three of the happiest (e.g., Norway, Denmark, Australia) and three of the least happy (Afghanistan, Zimbabwe, Zambia), selected for their consistent data across all indicators. 

@@ -29,7 +29,7 @@ export async function renderChart2() {
     .attr("height", 250);
 
   // Set margins as done in previous projects:
-  const margin = { top: 40, right: 80, bottom: 70, left: 80 };
+  const margin = { top: 40, right: 100, bottom: 70, left: 80 };
   const width = rect.width - margin.left - margin.right;
   const height = rect.height - margin.top - margin.bottom;
 
