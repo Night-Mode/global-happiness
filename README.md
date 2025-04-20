@@ -64,7 +64,7 @@ All datasets were cleaned and merged prior to visualization. Key preprocessing s
 
 ## Project Structure
 
-GLOBAL-HAPPINESS/
+GLOBAL-HAPPINESS/  
 ├── data/ # Cleaned and merged datasets for visualizations  
 ├── js/ # D3 chart modules (chart1 through chart6)  
 ├── pre_processing/ # Notebooks and files used for preprocessing raw data  
