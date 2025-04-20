@@ -64,7 +64,15 @@ All datasets were cleaned and merged prior to visualization. Key preprocessing s
 
 ## Project Structure
 
-. ├── index.html # Main layout and tab interface ├── styles.css # Page styling ├── script.js # Tab switching and chart loading logic ├── js/ # Individual chart modules │ ├── chart1.js # Stacked bar chart │ ├── chart2.js # SDG indicators (optional) │ ├── chart3.js # Scatterplot │ ├── chart4.js # Choropleth map │ ├── chart5.js # Radar plot │ ├── chart6.js # Dual-axis boxplot ├── data/ # Cleaned CSV files └── preprocessing/ # Python notebooks or scripts for data prep
+GLOBAL-HAPPINESS/
+├── data/ # Cleaned and merged datasets for visualizations
+├── js/ # D3 chart modules (chart1 through chart6)
+├── pre_processing/ # Notebooks and files used for preprocessing raw data
+├── happy-people.png # Image used on the homepage
+├── index.html # Main page with tab navigation and layout
+├── README.md # Project overview and setup instructions
+├── script.js # Handles tab switching and chart module loading
+└── styles.css # Styles for layout, fonts, and visual elements
 
 ## How to Use
 
