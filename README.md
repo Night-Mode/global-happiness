@@ -65,14 +65,14 @@ All datasets were cleaned and merged prior to visualization. Key preprocessing s
 ## Project Structure
 
 GLOBAL-HAPPINESS/  
-├── data/ # Cleaned and merged datasets for visualizations  
-├── js/ # D3 chart modules (chart1 through chart6)  
-├── pre_processing/ # Notebooks and files used for preprocessing raw data  
-├── happy-people.png # Image used on the homepage  
-├── index.html # Main page with tab navigation and layout  
-├── README.md # Project overview and setup instructions  
-├── script.js # Handles tab switching and chart module loading  
-└── styles.css # Styles for layout, fonts, and visual elements
+├── data/ - Cleaned and merged datasets for visualizations  
+├── js/ - D3 chart modules (chart1 through chart6)  
+├── pre_processing/ - Notebooks and files used for preprocessing raw data  
+├── happy-people.png - Image used on the homepage  
+├── index.html - Main page with tab navigation and layout  
+├── README.md - Project overview and setup instructions  
+├── script.js - Handles tab switching and chart module loading  
+└── styles.css - Styles for layout, fonts, and visual elements
 
 ## How to Use
 
