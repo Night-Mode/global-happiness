@@ -151,7 +151,6 @@ export async function renderChart2() {
       .style("font-size", "14px");
   }
 
-
   // Create legend function with sorting capabilities:
   function createLegend(sortKey) {
     legendSvg.selectAll("*").remove();

@@ -6,6 +6,8 @@ import { renderChart4 } from "./js/chart4.js";
 import { renderChart5 } from "./js/chart5.js";
 import { renderChart6 } from "./js/chart6.js";
 
+
+// Descriptions for each page
 const descriptions = [
   `<h3>Global Happiness Scores Overview</h3>
 <p>
@@ -56,68 +58,93 @@ const descriptions = [
 </p>`,
 
   `<h3>Exploring Relationships Between Happiness Factors</h3>
-    <p>
-      This scatterplot allows users to dynamically explore relationships between different variables from the 2024 World Happiness Report. 
-      Users can select any two contributing factors—such as GDP per capita, social support, or freedom to make life choices—to assign to the X and Y axes.
-    </p>
-    <p>
-      Each point represents a country and is color-coded according to its overall Happiness Ladder Score. 
-      This color gradient helps identify whether clusters of high or low happiness align with particular combinations of variables.
-    </p>
-    <p>
-      Minimal preprocessing was required for this visualization, as the values were used directly from the dataset. 
-      The interactive nature of the chart allows users to experiment with different factor combinations and uncover potential patterns, such as:
-    </p>
-    <ul>
-      <li>Strong correlations between two variables</li>
-      <li>Clusters of countries with similar scores</li>
-      <li>Outliers or weak associations that may indicate a lower impact on happiness</li>
-    </ul>
-    <p>
-      By comparing axes that do or do not lead to visible clustering by color, users can also infer whether certain factors had a stronger or weaker influence 
-      on the reported happiness scores. If no clear pattern emerges, that combination may not have contributed significantly to the overall score.
-    </p>
+
+<p>
+  This scatterplot invites users to explore the relationships between various contributing factors from the 2024 World Happiness Report.
+  By selecting any two variables—such as GDP per capita, social support, or freedom to make life choices—for the X and Y axes, users can interactively investigate how different factors may relate to one another.
+</p>
+
+<p>
+  Each point on the chart represents a country and is color-coded according to its overall Happiness Ladder Score, grouped into intuitive color bins.
+  This visual encoding enables users to quickly assess whether countries with similar happiness levels tend to group together when plotted against certain factor combinations.
+</p>
+
+<p>
+  A key design choice in this visualization is the use of color clustering as a visual proxy for correlation.
+  When countries with similar colors form clear groups on the chart, it suggests a strong relationship between the selected variables and overall happiness.
+  Conversely, when the colors are scattered with no visible clustering, it may indicate that the chosen factors have little or no direct association with happiness outcomes.
+</p>
+
+<p>
+  This dynamic setup empowers users to:
+</p>
+
+<ul>
+  <li>Identify strong correlations where ladder score clusters align with variable patterns.</li>
+  <li>Discover natural groupings of countries with similar socioeconomic profiles.</li>
+  <li>Spot outliers that deviate from broader trends.</li>
+  <li>Test hypotheses by changing axes to see which variables show the strongest alignment with happiness.</li>
+</ul>
+
+<p>
+  Minimal preprocessing was needed, as the data was used directly from the report, keeping the visualization as close to the source as possible.
+  By putting these choices in the hands of users, the chart not only reveals statistical patterns—it encourages curiosity and critical thinking about what truly drives national well-being.
+</p>
+
   `,
   `
 <h3>Comparing Additional Well-Being Dimensions Across Countries</h3>
+
 <p>
-  This radar plot allows users to select and compare up to six countries across five dimensions that are 
-  not included in the World Happiness Report. These additional indicators—drawn from external 
-  global datasets—offer a broader perspective on factors that may influence a nation’s well-being.
+  This radar plot enables users to explore six countries at a time—by default, three from the top 10 and three from the bottom 10
+  based on overall Happiness Ladder Scores. Users may also select their own countries from a dropdown, allowing for customized comparisons across a wide range of national profiles.
 </p>
+
 <p>
-  Each country’s shape is filled with a color corresponding to its overall Happiness Ladder Score. This helps users 
-  visually assess whether high or low happiness levels appear to correlate with strengths or weaknesses across these 
-  supplementary dimensions.
+  The visualization focuses on five additional well-being dimensions that were not included in the World Happiness Report but were selected based on external research and their potential relevance to national happiness and quality of life.
 </p>
+
 <p>
-  Significant preprocessing was required to build this visualization. Each dimension came from a separate data source, 
-  which required:
+  Each country's radar shape is filled with a color corresponding to its Happiness Ladder Score, grouped into four bins. This color encoding allows users to:
 </p>
+
 <ul>
-  <li>Standardizing country names and mapping each country to its ISO3 code.</li>
-  <li>Consolidating subnational data (e.g., Scotland, Wales) into a national value.</li>
-  <li>Using the most recent year available when time series data was incomplete.</li>
-  <li>Normalizing and binning all scores into a 1-5 scale to enable visual comparison.</li>
+  <li>Spot clusters of similarly colored shapes that may indicate a correlation between strong performance in certain areas and higher happiness levels.</li>
+  <li>Contrast high-scoring and low-scoring countries to identify structural drivers of happiness.</li>
+  <li>Explore whether similar profiles produce different happiness outcomes, suggesting cultural or contextual nuances.</li>
 </ul>
+
 <p>
-  The five dimensions shown on the radar chart are:
+  The five supplementary dimensions displayed on the radar chart are:
 </p>
+
 <ul>
-  <li><strong>Global Health Security Index</strong> - Preparedness to respond to health crises. Higher scores are better.</li>
-  <li><strong>Technology Access (ICT Index)</strong> - Measures digital access and connectivity. Higher scores are better.</li>
-  <li><strong>Education (Learning-Adjusted Years)</strong> - Average years of quality schooling. Higher scores are better.</li>
-  <li><strong>Violence (Assault Rate)</strong> - Incidence of physical and sexual assaults. Lower scores are better (inversely scaled).</li>
-  <li><strong>Income Inequality (Gini Index)</strong> - Degree of income disparity. Lower scores are better (inversely scaled).</li>
+  <li><strong>Global Health Security Index</strong> - Preparedness to handle national health crises (higher scores indicate better readiness).</li>
+  <li><strong>Technology Access (ICT Index)</strong> - Measures internet and digital infrastructure access (higher is better).</li>
+  <li><strong>Education (Learning-Adjusted Years)</strong> - Average quality-adjusted years of schooling (higher is better).</li>
+  <li><strong>Violence (Assault Rate)</strong> - Annual incidents of physical and sexual assault (lower is better; inversely scaled).</li>
+  <li><strong>Income Inequality (Gini Index)</strong> - Degree of income disparity (lower is better; inversely scaled).</li>
 </ul>
+
 <p>
-  This chart is useful for discovering how countries compare in areas beyond the core happiness factors and identifying 
-  possible contributors to national well-being that are not explicitly included in the World Happiness Report.
+  Preprocessing steps were required to merge and normalize these diverse datasets:
+</p>
+
+<ul>
+  <li>Standardizing country names and matching to ISO3 codes.</li>
+  <li>Aggregating subnational regions into national-level data (e.g., Scotland, Wales).</li>
+  <li>Selecting the most recent available year when complete time series data was unavailable.</li>
+  <li>Normalizing all indicators to a 1-5 scale for consistent visual comparison across dimensions.</li>
+</ul>
+
+<p>
+  This visualization helps users explore hidden patterns and hypotheses about what additional structural or social factors may influence happiness. 
+  Through the combined power of radar shape and color encoding, the chart encourages comparative reasoning and visual discovery across countries and indicators not typically captured by standard happiness measures.
 </p>
 `,
   `<h3>Trends in Sustainable Development Indicators</h3>
 <p>
-  This chart integrates the World Health Organization’s Sustainable Development Goals (SDG) dataset to explore demographic and economic indicators that may explain happiness scores from Charts 1 and 2. 
+  This chart integrates the World Health Organization's Sustainable Development Goals (SDG) dataset to explore demographic and economic indicators that may explain happiness scores from Charts 1 and 2. 
   It uses an interactive area chart to track under-five mortality rates, access to drinking water in schools, and unemployment rates from 2015 to 2022.
 </p>
 <p>
@@ -126,8 +153,8 @@ const descriptions = [
 </p>
 <p>
   The chart reveals notable trends. For instance, happier countries like Norway maintain near-universal access to drinking water (close to 100%) and low under-five mortality rates (under 5 per 1,000). 
-  In contrast, less happy countries like Afghanistan show lower water access (e.g., 60–80%) and higher mortality rates. 
-  Interactivity allows users to select indicators via a dropdown and highlight a country’s trend by clicking its name in the legend, enhancing clarity.
+  In contrast, less happy countries like Afghanistan show lower water access (e.g., 60-80%) and higher mortality rates. 
+  Interactivity allows users to select indicators via a dropdown and highlight a country's trend by clicking its name in the legend, enhancing clarity.
 </p>
 <p>Important definitions for indicators as mentioned in the SDG report:</p>
 <ul>
@@ -140,29 +167,51 @@ const descriptions = [
   Building on the choropleth and stacked bar charts, this area chart illustrates how key well-being indicators evolve over time, offering insights into factors influencing happiness across diverse nations.
 </p>`,
 `
-<h3>Regional Distributions of Well-Being Dimensions</h3>
+<h3>Regional Comparisons of Happiness and Additional Factors</h3>
+
 <p>
-  This box plot visualization uses the same five dimensions from the radar plot—drawn from external data sources not included in the World Happiness Report. 
-  Instead of focusing on individual countries, this chart highlights regional variations in each dimension.
+  This dual-axis boxplot visualization enables users to compare distributions of two variables—one from the World Happiness Report (either the overall Ladder Score or one of its contributing factors) and one from a set of additional well-being dimensions (such as inequality, violence, or health system preparedness).
 </p>
+
 <p>
-  By grouping countries into broader world regions, the box plot allows users to compare how indicators such as education, technology access, public safety, 
-  health preparedness, and income inequality vary across different parts of the world. The visual layout makes it easy to:
+  For each global subregion, two side-by-side boxplots are shown:
 </p>
+
 <ul>
-  <li>Understand the distribution and spread of scores within each region</li>
-  <li>Identify regional medians and interquartile ranges</li>
-  <li>Spot outliers that stand out from the rest of the region</li>
+  <li>The <span style="color:#66c2a5;">green boxplot (left axis)</span> represents the selected happiness-related metric.</li>
+  <li>The <span style="color:#fc8d62;">orange boxplot (right axis)</span> displays one of the additional dimensions explored in the radar plot.</li>
 </ul>
+
 <p>
-  This chart is especially useful for identifying regions that are performing exceptionally well or poorly in a given category, and for drawing 
-  attention to countries that deviate significantly from their peers. It complements the radar chart by shifting focus from individual profiles 
-  to regional trends and disparities.
+  By comparing the shapes, ranges, and medians of these two boxplots per region, users can visually assess:
+</p>
+
+<ul>
+  <li>Regional variability: Wide boxes suggest greater spread and inequality within that region.</li>
+  <li>Regional similarity: Narrow, compact boxes imply more consistent scores among countries in that region.</li>
+  <li>Cross-variable relationships: Similar patterns or aligned distributions between the two dimensions may suggest potential correlation or shared underlying influences.</li>
+</ul>
+
+<p>
+  This visualization supports a range of comparative reasoning tasks:
+</p>
+
+<ul>
+  <li>Does the region with the highest median happiness also show high scores in health preparedness or low inequality?</li>
+  <li>Do regions with wide spreads in happiness also show wide spreads in violence or education?</li>
+  <li>Are there regions where the boxplot patterns for both dimensions follow a similar shape, hinting at possible relationships?</li>
+</ul>
+
+<p>
+  Because the Y-axes are independent and scaled separately, the visualization preserves the integrity of the underlying distributions for each variable.
+  This approach makes it easy to spot alignment, contrast, and variation within and across regions, unlocking a deeper understanding of how happiness scores and other structural factors may be related.
 </p>
 `
 ];
 
+// AI Help - Generating and troubleshooting the dynamic tab functionality
 
+// Create handling for tab switching
 const tabButtons = document.querySelectorAll(".tab");
 const descriptionContainer = document.getElementById("description");
 
@@ -217,3 +266,5 @@ function setupChartContainer() {
 
 // Initial render
 renderChart(0);
+
+// End AI

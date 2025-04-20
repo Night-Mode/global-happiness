@@ -1,8 +1,9 @@
-// chart3.js
+// Import D3 library from CDN
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 export async function renderChart3() {
-  // Clear chart sections
+  
+  // Select DOM containers and clear previous content
   const visualContainer = document.getElementById("chart-visual");
   const controlsContainer = document.getElementById("chart-controls");
   const legendContainer = document.getElementById("chart-legend");
@@ -11,12 +12,13 @@ export async function renderChart3() {
   controlsContainer.innerHTML = "";
   legendContainer.innerHTML = "";
 
+  // Set chart title
   const titleElement = document.getElementById("chart-title");
   if (titleElement) {
     titleElement.textContent = "Exploring Correlates of Global Happiness";
   }
 
-  // Create dropdowns with helpful instruction
+  // Create dropdown UI for selecting X and Y axes
   controlsContainer.innerHTML = `
     <p style="margin-bottom: 0.5rem; font-size: 16px;">
       <em>Select variables for the X and Y axes to explore relationships with happiness scores.</em>
@@ -28,6 +30,7 @@ export async function renderChart3() {
     <select id="y-axis" style="width: 100%;"></select>
   `;
 
+  // Define chart size and margins
   const rect = visualContainer.getBoundingClientRect();
 
   const svg = d3.select(visualContainer)
@@ -40,6 +43,7 @@ export async function renderChart3() {
   const width = rect.width - margin.left - margin.right;
   const height = rect.height - margin.top - margin.bottom;
 
+  // Create chart group and axis groups
   const chartGroup = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -48,6 +52,7 @@ export async function renderChart3() {
 
   const yAxisGroup = chartGroup.append("g");
 
+  // Axis labels
   const xAxisLabel = chartGroup.append("text")
     .attr("class", "x-axis-label")
     .attr("x", width / 2)
@@ -63,11 +68,14 @@ export async function renderChart3() {
     .attr("text-anchor", "middle")
     .attr("font-size", "18px");
 
+  // Tooltip for hover interaction
   const tooltip = d3.select(".tooltip");
 
+  // Load scatterplot data and infer numerical dimensions
   const data = await d3.csv("data/scatterplot.csv", d3.autoType);
   const numericalColumns = Object.keys(data[0]).filter(d => d !== "Country" && d !== "Ladder Score");
 
+  // Populate dropdown menus
   const xSelect = d3.select("#x-axis");
   const ySelect = d3.select("#y-axis");
 
@@ -76,6 +84,7 @@ export async function renderChart3() {
     ySelect.append("option").text(dim).attr("value", dim);
   });
 
+  // Define linear scales and color binning
   let xScale = d3.scaleLinear().range([0, width]);
   let yScale = d3.scaleLinear().range([height, 0]);
 
@@ -86,11 +95,11 @@ export async function renderChart3() {
 
   const legendCategories = ["0-2", "2-4", "4-6", "6-8"];
 
-// Build legend
+// Build color legend
 const legendSvg = d3.select(legendContainer)
   .append("svg")
   .attr("width", 250)
-  .attr("height", 175); // Match radar legend height
+  .attr("height", 175); 
 
 const legendLabels = [
   { label: "6 - 8", color: "#377eb8" },
@@ -131,22 +140,28 @@ items.append("text")
   .text(d => d.label);
 
 
+// Update chart functionality upon menu change
 function updateChart() {
   const xAttr = xSelect.node().value;
   const yAttr = ySelect.node().value;
 
+  // Update scale domains
   xScale.domain(d3.extent(data, d => d[xAttr]));
   yScale.domain(d3.extent(data, d => d[yAttr]));
 
+  // Update axes with transition
   xAxisGroup.transition().duration(500).call(d3.axisBottom(xScale))
   .selectAll("text")
   .style("font-size", "14px");
   yAxisGroup.transition().duration(500).call(d3.axisLeft(yScale))
   .selectAll("text")
   .style("font-size", "14px"); ;
+  
+  // Update axis labels
   xAxisLabel.text(xAttr);
   yAxisLabel.text(yAttr);
 
+  // Bind data and update circle positions/colors
   const circles = chartGroup.selectAll("circle").data(data);
 
   circles.enter()
@@ -159,6 +174,7 @@ function updateChart() {
     .attr("cy", d => yScale(d[yAttr]))
     .attr("fill", d => colorScale(d["Ladder Score"]));
 
+  // Hover interactions
   svg.selectAll("circle")
     .on("mouseover", function (event, d) {
       d3.select(this).transition().duration(200).attr("r", 12);
@@ -175,7 +191,8 @@ function updateChart() {
       d3.select(this).transition().duration(200).attr("r", 8);
       tooltip.style("display", "none");
     });
-
+  
+  // Remove any excess elements
   circles.exit().remove();
   }
 
@@ -183,6 +200,8 @@ function updateChart() {
   xSelect.property("value", "Log GDP per capita");
   ySelect.property("value", "Healthy Life Expectancy");
   updateChart();
+
+  // Attach event listeners
   xSelect.on("change", updateChart);
   ySelect.on("change", updateChart);
 }
